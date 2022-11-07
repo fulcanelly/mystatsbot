@@ -6,6 +6,7 @@ This is a bot for keeping track of done things and analyzing spent time
 
 
 # Todo list (From high to low priority)
+ - [ ] Setup state
  - [ ] More control over activities (delete, edit)
  - [ ] Make data visualization better 
    - [ ] Pagination 
