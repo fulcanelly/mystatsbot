@@ -1,36 +1,158 @@
-# class BaseMoscalState < BaseState
-#     def me_when_smth_applied
-#         if gender == :male 
-#             "свого москаля"
-#         else 
-#             "свою москальку"
-#         end
-#     end
-
-# end
 
 
-
-
-class StartingState < BaseState 
-
-    def run
-        
-        #just to skip /start command 
-        expect_text
-
-        say "Ласкаво просимо до нашого бота 🇺🇦"
-        say "Цей бот розроблено з метою зібрати кошти на ЗСУ і дати можливість людям відчути себе більш залученими в боротьбу з москалями"
-        _suggest("Адже як відомо - русофобії багато не буває", ['Почати гру'])
+class MainMenuState < BaseState
     
+    def run 
+        
+        suggest_it("What to do ?")
+            .tap do 
 
-        say(
-            "Ще один факт - у москалів немає свободи волі, " + 
-            "тому у грі ви маєте власного москаля який повністью вам підкоряється"
-        )
+                _1.option("Start activity") do 
+                    switch_state EnterActivityState.new(self)
+                end unless self.myself.activities.empty?
+
+            end
+            .option("Settings") do
+                switch_state SettingState.new(self)
+            end
+            .option("Show data") do 
+                switch_state ShowDataState.new(self)
+            end
+            .exec
+
+        switch_state MainMenuState.new
+    end
+    
+end
+
+# TODO from back
+
+class StateWithPast < BaseState
+
+    def suggest_it(text) 
+        super(text)
+            .option("Go back ") 
+   
+    end
 
 
-        switch_state CharacterGenerationState.new
+end
+
+
+
+class EnterActivityState < BaseState
+    
+    def initialize(back)
+        @back = back
+    end
+
+    def run         
+        loop do 
+            #select activity
+            act = suggest_it("Select activity to start")
+                .tap do |sg|
+                    myself.activities.each do |act| 
+                        sg.option(act.name) do act end
+                    end
+                end
+                .option("Back") do 
+                    switch_state(@back)
+                end
+                .exec
+            
+                
+            unless suggest_it("Are you sure ?")
+                .option("Yes") do  true end
+                .option("No (Cancel)") do end
+                .exec then 
+                next
+            end
+
+
+            #save start time 
+            myself.stories.create(
+                status: "start",
+                activity: act
+            )
+
+            say "Activity /#{act.name}/ started"
+        end
+
     end
 
 end
+
+
+
+class ShowDataState < BaseState
+
+    def initialize(back)
+        @back = back
+    end
+
+    def run 
+        result = ""
+        myself.stories.each do |story| 
+            result << "[#{story.created_at}] #{story.activity.name} #{story.status}\n" 
+        end
+
+        say(result)
+
+        switch_state @back
+    end
+
+end
+
+
+class SettingState < BaseState
+    
+    def initialize(back)
+        @back = back
+    end
+
+    def activity_settings 
+        run = true 
+        while run 
+
+            actlist = myself.activities
+                .map(&:name).join("\n")
+
+            suggest_it("Your activites: \n\n#{actlist}")
+                .option("Add new activity") do
+                    say "Enter activity name"
+                    text = expect_text()
+
+                    myself.activities << Activity.new(name: text)
+                    myself.save
+                end
+                .option("Back") do 
+                    run = false 
+                end
+                .exec
+        end
+
+    end
+
+    def time_settings 
+        say("Current timezone set to {x:y:idk!}")
+
+    end
+
+    def run 
+        suggest_it("Settings")
+            .option("Activity settings") do 
+                activity_settings()
+            end
+            .option("Time sttings") do 
+                time_settings()
+            end
+            .option("Back") do 
+                switch_state(@back)
+            end
+            .exec()
+        
+        switch_state self
+    end
+
+end
+
