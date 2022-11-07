@@ -1,5 +1,5 @@
 # Stats bot
 
-This is bot for keeping track of done thing and analyzing spent time
+This is a bot for keeping track of done things and analyzing spent time
  
 # [Bot datasheet](./bot/DATASHEET.md) 
