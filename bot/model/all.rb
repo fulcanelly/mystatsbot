@@ -8,7 +8,7 @@ class CreateAll < ActiveRecord::Migration[7.0]
         create_table :users, if_not_exists: true do |t|
                     
             t.string :name
-            t.integer :user_id
+            t.integer :user_id, :limit => 8
             
             t.timestamps 
         end
