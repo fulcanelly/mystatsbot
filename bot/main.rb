@@ -45,7 +45,6 @@ class ContextProvider
         @context_by_id = {}
         @global_ctx = OpenStruct.new({
             context_provider: self,
-            chattroom: ChatroomObject.new 
         }) 
     end
 
