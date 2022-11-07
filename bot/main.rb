@@ -34,7 +34,8 @@ pp Config
 ## TODO scheduler
 class ContextProvider 
 
-
+    attr_accessor :first_state_class 
+    
     def get_all_ctx() 
         return @context_by_id.values
     end
@@ -54,14 +55,14 @@ class ContextProvider
 
     def _get_state_for(user_id)
         unless Config.resotre_state then 
-            return StartingState.new
+            return self.first_state_class().new()
         end
 
         state = User.find_by(user_id:).try do
                 _1.state 
             end
 
-        return StartingState.new unless state 
+        return self.first_state_class().new() unless state 
         
         return Marshal.load(
             state.state_dump
@@ -164,10 +165,13 @@ class Application
 
     def _on_message(msg)
         user_id = msg.from.id
-        
+
         provider.find_by_user_id(user_id).tap do |ctx|
             ctx.extra.mailbox << msg.text 
         end
+        
+        #TODO
+     #   optional_pipe.emit()
         
         _update_user_from(msg.from)    
     end
@@ -200,6 +204,10 @@ end
 bot = Bot.new(token)
 pipe = EventPipe.new 
 provider = ContextProvider.new(bot)
+
+
+
+provider.first_state_class = MainMenuState
 
 bot.connect
 
