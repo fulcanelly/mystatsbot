@@ -15,3 +15,4 @@ This is a bot for keeping track of done things and analyzing spent time
  - [ ] Add activity groups
  - [ ] Timezone settings
  - [ ] Persist state (via tg VM)
+ - [ ] Localization 
