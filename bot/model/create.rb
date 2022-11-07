@@ -4,9 +4,9 @@ require_relative './connect'
 class CreateAll < ActiveRecord::Migration[7.0]
     def change 
 
+
         #telegram user 
         create_table :users, if_not_exists: true do |t|
-                    
             t.string :name
             t.integer :user_id, :limit => 8
             
@@ -23,39 +23,24 @@ class CreateAll < ActiveRecord::Migration[7.0]
         end
     
 
-        # where player currently lives 
-        create_table :locations, if_not_exists: true do |t|
-            t.string :name
-            t.string :type 
-            t.timestamps 
-        end
-
-        #what player do for living
-        create_table :occupations, if_not_exists: true do |t|
+        create_table :activities, if_not_exists: true do |t|
             t.string :name 
-            t.string :type 
-            t.timestamps 
-        end
-
-        #character is all about player 
-
-        create_table :characters, if_not_exists: true do |t|
-            t.string :name
-            t.integer :age
-            t.integer :karma 
-            t.integer :deaths
-            t.boolean :is_man?
 
             t.references :user, null: true, foreign_key: { to_table: :users }
-            t.references :occupation, null: true, foreign_key: { to_table: :occupations }
-            t.references :location, null: true, foreign_key: { to_table: :locations }
 
-            t.timestamps 
+            t.timestamps
+        end
 
+        create_table :stories, if_not_exists: true do |t|
+            t.text :status 
 
-        end 
+            t.references :activity, null: false, foreign_key: { to_table: :activities }
+            t.references :user, null: true, foreign_key: { to_table: :users }
 
-        
+            t.timestamps
+        end
+    
+    
     end
 end
 

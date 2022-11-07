@@ -1,25 +1,46 @@
 class User < ActiveRecord::Base
-    has_one :character
+    
+    has_many :activities
+    has_many :stories
+
     has_one :state
 
-    accepts_nested_attributes_for :character, :state
+    accepts_nested_attributes_for :activities, :stories, :state
+
 end
 
+class State < ActiveRecord::Base 
 
-class Character < ActiveRecord::Base
     belongs_to :user
-    belongs_to :location
-    belongs_to :occupation
 
     accepts_nested_attributes_for :user
+
 end
 
+class Activity < ActiveRecord::Base 
 
-class Location < ActiveRecord::Base
-    has_many :characters 
+    belongs_to :user
     
+
+    accepts_nested_attributes_for :user
+
 end
 
-class Occupation < ActiveRecord::Base
-    has_many :characters
+
+class Story < ActiveRecord::Base
+
+    belongs_to :user
+    belongs_to :activity
+
+    accepts_nested_attributes_for :user, :activity
+
 end
+
+
+# class State < ActiveRecord::Base
+
+#     belongs_to :user
+
+#     accepts_nested_attributes_for :user
+
+# end
