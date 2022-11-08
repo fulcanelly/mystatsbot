@@ -48,7 +48,10 @@ class Bot
                 else JSON.dump(value)
             end 
         end.to_h
-        "https://api.telegram.org/bot#{@token}/#{gen_request_str(method, args)}"
+        "https://api.telegram.org/bot#{@token}/#{gen_request_str(method, args)}".tap do 
+            pp _1 if Config.debug 
+        end
+
     end
 
 
