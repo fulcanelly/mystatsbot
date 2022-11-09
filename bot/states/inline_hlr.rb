@@ -29,12 +29,18 @@ end
 
 class InlineCbHandler < BaseState
 
-    def initialize(callback_query_id)
-        @callback_query_id = callback_query_id
+    attr_accessor :cbq
+
+    def initialize(cbq)
+        @cbq = cbq
     end
 
+    def callback_query_id() = cbq.id 
+
+    def message_id() = cbq.message.message_id
+
     def answer(**data) 
-        Fiber.yield AnswerCallbackQueryAction.new(@callback_query_id, **data)
+        Fiber.yield AnswerCallbackQueryAction.new(callback_query_id, **data)
     end
 
     def select_activity(data)
