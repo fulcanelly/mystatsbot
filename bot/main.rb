@@ -178,11 +178,12 @@ class Application
     def _on_callback_query(cbq) 
         user_id = cbq.from.id
         cbdata = cbq.data 
+        callback_query_id = cbq.id
 
         ctx = provider.find_by_user_id(user_id)
 
         fiber = Fiber.new do 
-            InlineCbHandler.new.tap do |chandler|
+            InlineCbHandler.new(callback_query_id).tap do |chandler|
                 chandler.executor = ctx.state.executor
             end.handle(cbdata)
         end
