@@ -62,7 +62,7 @@ end
 
 
 class Context 
-    attr_accessor :state, :extra, :global 
+    attr_accessor :state, :extra, :global
 
     def initialize(fiber, state)
         @state = state

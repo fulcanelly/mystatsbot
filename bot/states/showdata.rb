@@ -1,19 +1,10 @@
 
-class InlineKeyboardHelper 
 
-    def initialize(user)
-        @user = user
+class StatePussy < BaseState 
+    def run 
+        say "hi from state pussy"
+        switch_state ShowDataState.new(MainMenuState.new)
     end
-
-    def method_missing(name, **args)
-        @user.inline_keyboards.create(dump:)
-    end
-
-end
-
-
-module InlineCbHandler 
-
 
 end
 

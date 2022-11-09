@@ -175,14 +175,33 @@ class Application
         _update_user_from(msg.from)    
     end
 
+    def _on_callback_query(cbq) 
+        user_id = cbq.from.id
+        cbdata = cbq.data 
+
+        ctx = provider.find_by_user_id(user_id)
+
+        fiber = Fiber.new do 
+            InlineCbHandler.new.tap do |chandler|
+                chandler.executor = ctx.state.executor
+            end.handle(cbdata)
+        end
+        
+        ctx.side_runner(fiber).tap do 
+            _1.first_run()
+        end.flat_run()
+    
+    end
+
+
     def setup_handlers() 
 
         pipe.on_message do |msg|
             _on_message(msg)
         end
         
-        pipe.on_callback_query do 
-            #TODO
+        pipe.on_callback_query do |cbq|
+            _on_callback_query(cbq)
         end
 
     end
