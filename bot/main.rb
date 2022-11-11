@@ -193,11 +193,19 @@ class Application
     
     end
 
+    def _on_command(msg) 
+    
+    end
+
 
     def setup_handlers() 
 
         pipe.on_message do |msg|
-            _on_message(msg)
+            if msg.text.try do _1.start_with? '/' end then 
+                _on_command(msg)
+            else 
+                _on_message(msg)
+            end
         end
         
         pipe.on_callback_query do |cbq|
