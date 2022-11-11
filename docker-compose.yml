@@ -6,6 +6,8 @@ services:
     networks: ['mynetwork']
     build: ./bot
 
+    volumes:
+      - ./bot:/app
     depends_on: 
       - postgres-setup
     stdin_open: true
