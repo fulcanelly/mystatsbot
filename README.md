@@ -16,3 +16,5 @@ This is a bot for keeping track of done things and analyzing spent time
  - [ ] Timezone settings
  - [ ] Persist state (via tg VM)
  - [ ] Localization 
+ - [ ] Add events planer
+ - [ ] Add timers for activities (some tasks i.e. activities can take some fixed time) 
