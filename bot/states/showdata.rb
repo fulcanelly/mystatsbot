@@ -1,13 +1,5 @@
 
 
-class StatePussy < BaseState 
-    def run 
-        say "hi from state pussy"
-        switch_state ShowDataState.new(MainMenuState.new)
-    end
-
-end
-
 class ShowDataState < BaseState
 
     include CommonInline
