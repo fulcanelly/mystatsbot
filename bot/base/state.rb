@@ -71,12 +71,12 @@ class BaseState
     
     def _suggest(tittle, options)
         say tittle, kb: options
-        selected = expect_enum(options, "Немає такого варіанту")
+        selected = expect_enum(options, Config.unknown_option)
     end
 
     def suggest_it(title)
         SuggesterBuilder.new(self, title)
-            .wrong("Немає такого варіанту")
+            .wrong(Config.unknown_option )
     end
 
 
@@ -95,9 +95,19 @@ class BaseState
         executor.myself
     end
 
+    def __ctx
+        executor.__ctx 
+    end
+
+    def edit_text(msg, text, reply_markup)
+        executor.edit_text(msg, text, reply_markup)
+    end
+
+
     # is used to run when state started 
     #can't end with nil (undefined behaviour)
     def run 
         throw 'base state'
     end
 end
+

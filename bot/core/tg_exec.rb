@@ -49,6 +49,11 @@ class TGExecutor < BaseActionExecutor
     def myself 
         Fiber.yield GetMeAction.new
     end
+    
+
+    def edit_text(msg, text, reply_markup)
+        Fiber.yield EditMessageText.new(msg, text, reply_markup)
+    end
 
 
 end

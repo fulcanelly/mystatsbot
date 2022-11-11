@@ -36,11 +36,15 @@ def str_arr_to_kb(arr)
 
 end
 
+
+#TODO
+
 class TgSayAction < BaseAction
 
     def initialize(text, kb: nil, reply_markup: nil)
         @text = text
         @kb = kb
+        @reply_markup = reply_markup
     end
 
     def exec(ctx)   

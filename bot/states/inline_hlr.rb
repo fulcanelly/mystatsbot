@@ -1,15 +1,4 @@
 
-class InlineKeyboardHelper 
-
-    def initialize(user)
-        @user = user
-    end
-
-    def method_missing(name, **args)
-        @user.inline_keyboards.create(dump: "name()")
-    end
-
-end
 
 class AnswerCallbackQueryAction < BaseAction
     attr_accessor :data, :callback_query_id
@@ -25,6 +14,7 @@ class AnswerCallbackQueryAction < BaseAction
 
 end
 
+
 #TODO (may be BaseState limited)
 
 class InlineCbHandler < BaseState
@@ -38,7 +28,8 @@ class InlineCbHandler < BaseState
     def callback_query_id() = cbq.id 
 
     def message_id() = cbq.message.message_id
-
+    
+        
     def answer(**data) 
         Fiber.yield AnswerCallbackQueryAction.new(callback_query_id, **data)
     end
@@ -46,7 +37,19 @@ class InlineCbHandler < BaseState
     def select_activity(data)
     end
 
+    include CommonInline
+
     def handle(cbdata)
-        answer(text: "ok")
+        answer()
+
+        data = myself.inline_keyboards.find_by(id: cbdata)
+
+        return unless data        
+
+        text, kb = eval(data.dump)
+        edit_text(message_id(), text, kb)
+
     end
+    
+    
 end

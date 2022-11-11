@@ -12,7 +12,14 @@ class CreateAll < ActiveRecord::Migration[7.0]
             
             t.timestamps 
         end
-        
+
+        create_table :inline_keyboards, if_not_exists: true do |t|
+            t.string :dump 
+            t.string :message
+            t.references :user, null: true, foreign_key: { to_table: :users }
+            t.timestamps
+        end
+
         #state of bot
         create_table :states, if_not_exists: true do |t|
             t.binary :state_dump 
