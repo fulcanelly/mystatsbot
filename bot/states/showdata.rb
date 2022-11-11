@@ -3,14 +3,19 @@
 class ShowDataState < BaseState
 
     include CommonInline
-    
+
     def initialize(back)
         @back = back
     end
 
     def run 
-        text, stuff = get_stories_page()
-        say(text, reply_markup: stuff)
+        page = get_stories_page()
+
+        case get_stories_page()
+        in {page: {text:, kb:}}
+            say(text, reply_markup: kb)
+        end
+            
         switch_state @back
     end
 

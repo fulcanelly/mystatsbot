@@ -86,19 +86,22 @@ end
 
 
 class SettingState < BaseState
-    
+    include CommonInline
+
     def initialize(back)
         @back = back
     end
 
-    def activity_settings 
+    def activity_settings()
         run = true 
         while run 
 
             actlist = myself.activities
                 .map(&:name).join("\n")
 
-            suggest_it("Your activites: \n\n#{actlist}")
+            say_ikb(get_activities_settings()) 
+
+            suggest_it("Your activites")
                 .option("Add new activity") do
                     say "Enter activity name"
                     text = expect_text()
@@ -116,7 +119,10 @@ class SettingState < BaseState
 
     def time_settings 
         say("Current timezone set to {x:y:idk!}")
-
+        # case get_time_settings()
+        # in {page: {text:, kb:}}
+        #     say(text, reply_markup: kb)
+        # end
     end
 
     def run 
@@ -137,3 +143,25 @@ class SettingState < BaseState
 
 end
 
+
+class RenameActivity < BaseState
+
+    def initialize(id)
+        @id = id  
+    end
+
+    def run 
+        activity = Activity.find_by(id: @id)
+        say "Enter new name for activity #{activity.name}"
+        new_name = expect_text 
+
+        activity.tap do 
+            activity.name = new_name 
+            activity.save
+        end
+
+
+        switch_state SettingState.new(MainMenuState.new)
+    end
+
+end

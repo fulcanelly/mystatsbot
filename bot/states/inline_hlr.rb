@@ -46,8 +46,13 @@ class InlineCbHandler < BaseState
 
         return unless data        
 
-        text, kb = eval(data.dump)
-        edit_text(message_id(), text, kb)
+        case eval(data.dump)
+        in {page: {text:, kb:}}
+            edit_text(message_id(), text, kb.to_h)
+        else 
+
+        end
+
 
     end
     
