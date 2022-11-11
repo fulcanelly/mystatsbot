@@ -1,4 +1,7 @@
+#Object.instance_method(A.instance_methods[0]).source_location
 
+
+require './hotreload'
 
 class Object 
 
@@ -15,6 +18,8 @@ class Object
 
 end
 
+
+
 token = ENV['TG_TOKEN']
 
 raise 'env variable TG_TOKEN required' unless token 
@@ -28,6 +33,7 @@ require_from("./states/*")
 require_from("./core/*")
 require_from("./lib/*")
 require_relative './config'
+#pp $LOADED_FEATURES
 
 pp Config
 
@@ -165,6 +171,8 @@ class Application
     def _on_message(msg)
         user_id = msg.from.id
 
+        #TODO: user wrapper for mailbox message
+        # i.e. data MailboxMsg = Text | Photo | File etc..
         provider.find_by_user_id(user_id).tap do |ctx|
             ctx.extra.mailbox << msg.text 
         end
@@ -227,20 +235,26 @@ class Application
 
 end
 
-bot = Bot.new(token)
-pipe = EventPipe.new 
-provider = ContextProvider.new(bot)
 
 
+reloader = HotReloader.new(list_all_rb_files())
+reloader.init
+reloader.entry_point do 
 
-provider.first_state_class = MainMenuState
+    bot = Bot.new(token)
+    pipe = EventPipe.new 
+    provider = ContextProvider.new(bot)
 
-bot.connect
+    provider.first_state_class = MainMenuState
 
-Application.new(bot, pipe, provider)
-    .tap do |app|
-        app.setup_handlers()
-      #  app.run_ctxes()
-        app.run()
-    end
+    bot.connect
 
+    Application.new(bot, pipe, provider)
+        .tap do |app|
+            app.setup_handlers()
+        #  app.run_ctxes()
+            app.run()
+        end
+
+end
+reloader.start
