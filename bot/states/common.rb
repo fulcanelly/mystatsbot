@@ -103,7 +103,7 @@ module CommonInline
 
         return {
             page: {
-                text: "Activity #{myself.activities.find_by(id:).name}", 
+                text: "Activity #{myself.activities.find_by(id:).try do _1.name end}", 
                 kb: kb.obtain
             }
         }
