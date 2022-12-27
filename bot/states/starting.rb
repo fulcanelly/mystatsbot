@@ -6,17 +6,16 @@ class MainMenuState < BaseState
         
         suggest_it("What to do ?")
             .tap do 
-
                 _1.option("Start activity") do 
-                    switch_state EnterActivityState.new(self)
+                    switch_state EnterActivityState.new(MainMenuState.new)
                 end unless self.myself.activities.empty?
 
             end
             .option("Settings") do
-                switch_state SettingState.new(self)
+                switch_state SettingState.new(MainMenuState.new)
             end
             .option("Show data") do 
-                switch_state ShowDataState.new(self)
+                switch_state ShowDataState.new(MainMenuState.new)
             end
             .exec
 
@@ -34,7 +33,6 @@ class StateWithPast < BaseState
             .option("Go back ") 
    
     end
-
 
 end
 
@@ -138,7 +136,7 @@ class SettingState < BaseState
             end
             .exec()
         
-        switch_state self
+        switch_state __clean_state(self)
     end
 
 end
