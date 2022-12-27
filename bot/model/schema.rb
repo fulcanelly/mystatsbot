@@ -2,8 +2,6 @@ require 'colored'
 
 class User < ActiveRecord::Base
 
-    
-    
     has_many :activities
     has_many :stories
 
@@ -31,7 +29,6 @@ class Activity < ActiveRecord::Base
 
 end
 
-
 class Story < ActiveRecord::Base
 
     belongs_to :user
@@ -41,30 +38,8 @@ class Story < ActiveRecord::Base
 
 end
 
-
-
-
 class InlineKeyboard < ActiveRecord::Base
 
     belongs_to :user
     
-
 end
-
-# pp InlineKeyboard.all
-
-# users = User.all.map do 
-#   pp  _1.inline_keyboards.create(dump:"lol")
-#   puts "loli".yellow
-# end
-
-# #pp users
-
-# puts "lol".red
-# class State < ActiveRecord::Base
-
-#     belongs_to :user
-
-#     accepts_nested_attributes_for :user
-
-# end
