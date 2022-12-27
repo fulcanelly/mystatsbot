@@ -94,11 +94,13 @@ module CommonInline
     def get_activity_settins(id)
         ikbhelper = InlineKeyboardHelper.new(myself)
         kb = InlineKeyboardExtra.create 
-        
+
         kb.add_row(
-            ibutton("Delete", ikbhelper.delete_activity(id)),
-            ibutton("Rename", ikbhelper.rename_activity(id)),
-            ibutton("Back", ikbhelper.get_activities_settings())
+            ibutton("Delete 🗑", ikbhelper.delete_activity(id)),
+            ibutton("Rename ✏️", ikbhelper.rename_activity(id)),
+        )
+        kb.add_row(
+            ibutton("Back ◀️", ikbhelper.get_activities_settings())
         )
 
         return {
