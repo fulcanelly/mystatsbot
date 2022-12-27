@@ -1,260 +1,81 @@
-#Object.instance_method(A.instance_methods[0]).source_location
+require 'active_record'
+require 'ostruct'
+require 'net/http'
+require 'json'
+require 'cgi'
+require 'open-uri'
+require 'recursive-open-struct'
+require 'logger'
+require 'colored'
+require 'awesome_print'
 
+require_relative './tg-toolkit/src/autoload'
 
-require './hotreload'
-
-class Object 
-
-    def require_from(dir)
-       
-        puts "> got dir; #{dir}, f:#{ File.dirname(__FILE__)}"
-        Dir.glob(dir)
-            .filter do _1.end_with?('.rb') end
-            .map do 
-                puts _1 
-                require _1 
-            end
-    end
-
-end
-
-
+Autoloader.new.load_from(__dir__)
 
 token = ENV['TG_TOKEN']
 
 raise 'env variable TG_TOKEN required' unless token 
 raise 'env variable TG_TOKEN required' if token.empty?
 
-require_from("./game/*")
-
-require_from("./base/*")
-require_from("./model/*")
-require_from("./states/*")
-require_from("./core/*")
-require_from("./lib/*")
-require_relative './config'
-#pp $LOADED_FEATURES
-
 pp Config
 
-## TODO scheduler
-class ContextProvider 
-
-    attr_accessor :first_state_class 
-    
-    def get_all_ctx() 
-        return @context_by_id.values
-    end
-
-    def initialize(bot)
-        @bot = bot
-        @context_by_id = {}
-        @global_ctx = OpenStruct.new({
-            context_provider: self,
-        }) 
-    end
-
-    def default_exec 
-        @_executor ||= TGExecutor.new 
-    end
-
-    def _get_state_for(user_id)
-        unless Config.resotre_state then 
-            return self.first_state_class().new()
-        end
-
-        state = User.find_by(user_id:).try do
-                _1.state 
-            end
-
-        return self.first_state_class().new() unless state 
-        
-        return Marshal.load(
-            state.state_dump
-        )
-    end
-
-    def _update_state_for(user_id, target_state) 
-        user = User.find_by(user_id:)
-        
-        state_dump = Marshal.dump(target_state)
-
-        unless user.state then 
-            user.state = State.new( 
-                state_dump:
-            )
-        else 
-            user.state.state_dump = state_dump
-        end
-        user.save
-    end
-
-    def create_ctx(user_id) 
-        #setting up state 
-        state = _get_state_for(user_id) #StartingState.new 
-        state.executor = default_exec()
-
-        #setting up fiber
-        fiber = Fiber.new do 
-            state.run
-        end
-
-        #setting up context 
-        ctx = Context.new(fiber, state) 
-        ctx.global = @global_ctx
-        ctx.extra = OpenStruct.new({
-            bot: @bot, 
-            user_id: user_id, 
-            mailbox: [],
-            provider: self
-        })
-        
-        return ctx  
-    end
-
-
-    def find_by_user_id(user_id) 
-        ctx = @context_by_id[user_id] || create_ctx(user_id)
-        
-        @context_by_id[user_id] = ctx
-    end 
-
-
+file_lister = proc do 
+    list_all_rb_files() 
 end
 
-
-
-
-
-
-class Application 
-
-    attr_accessor :bot, :pipe, :provider
-
-    def initialize(bot, pipe, provider)
-        @bot = bot 
-        @pipe = pipe
-        @provider = provider
-    end
-
-    def check_token()
-        unless bot.get_me([]).ok then  
-            throw 'wrong bot token'
-        end
-    end
-
-    def run()
-        loop do 
-            # pp provider
-            bot.fetch(pipe)
-            run_ctxes()
-        end
-    end
-
-    def _update_user_from(from)
-        user_id = from.id 
-        name = from.first_name
-
-        user = User.find_by(user_id:) 
-
-        unless user then 
-            return User.new(user_id:, name: name).save
-        end
-
-        if name != user.name
-            user.name = name 
-            user.save
-            return 
-        end        
-    end
-
-    def _on_message(msg)
-        user_id = msg.from.id
-
-        #TODO: user wrapper for mailbox message
-        # i.e. data MailboxMsg = Text | Photo | File etc..
-        provider.find_by_user_id(user_id).tap do |ctx|
-            ctx.extra.mailbox << msg.text 
-        end
-        
-        #TODO
-     #   optional_pipe.emit()
-        
-        _update_user_from(msg.from)    
-    end
-
+class MyApplication < Application
     def _on_callback_query(cbq) 
         user_id = cbq.from.id
         cbdata = cbq.data 
 
         ctx = provider.find_by_user_id(user_id)
 
+        last_exec = ctx.state.executor
+
         fiber = Fiber.new do 
             InlineCbHandler.new(cbq).tap do |chandler|
-                chandler.executor = ctx.state.executor
+                chandler.executor = TGExecutor.new
             end.handle(cbdata)
         end
         
         ctx.side_runner(fiber).tap do 
             _1.first_run()
         end.flat_run()
-    
+
+        ctx.state.executor = last_exec
     end
 
-    def _on_command(msg) 
-    
-    end
+    def setup_handlers()
 
-
-    def setup_handlers() 
-
-        pipe.on_message do |msg|
-            if msg.text.try do _1.start_with? '/' end then 
-                _on_command(msg)
-            else 
-                _on_message(msg)
-            end
-        end
-        
-        pipe.on_callback_query do |cbq|
+        self.pipe.on_callback_query do |cbq|
             _on_callback_query(cbq)
         end
 
+        super()
     end
 
+end
 
-    def run_ctxes()
-        provider.get_all_ctx().lazy()
-            .filter() do 
-                _1.can_run?
-            end.map() do 
-                _1.flat_run()
+
+CreateAll.new.change
+
+HotReloader.new(file_lister).tap do |reloader|
+    reloader.init
+    reloader.entry_point do 
+
+        bot = Bot.new(token)
+        pipe = EventPipe.new 
+        provider = ContextProvider.new(bot, MainMenuState)
+
+        bot.connect
+
+        MyApplication.new(bot, pipe, provider)
+            .tap do |app|
+                app.setup_handlers()
+            #   app.run_ctxes()
+                app.run()
             end
-            .force()
     end
-
+    reloader.start
 end
-
-
-
-reloader = HotReloader.new(list_all_rb_files())
-reloader.init
-reloader.entry_point do 
-
-    bot = Bot.new(token)
-    pipe = EventPipe.new 
-    provider = ContextProvider.new(bot)
-
-    provider.first_state_class = MainMenuState
-
-    bot.connect
-
-    Application.new(bot, pipe, provider)
-        .tap do |app|
-            app.setup_handlers()
-        #  app.run_ctxes()
-            app.run()
-        end
-
-end
-reloader.start
