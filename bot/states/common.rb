@@ -156,16 +156,18 @@ module CommonInline
         
         tools_row = []
 
-        kb.add_row(
+        page_number_to_show = page_number + 1
+
+        kb.add_row( 
             ibutton("<<", ikbhelper.get_stories_page(page_number - 1)),
-            ibutton("{ #{page_number + 1} }", "1"),
+            ibutton("{ #{page_number_to_show} }", "1"),
             ibutton(" >>", ikbhelper.get_stories_page(page_number + 1)),
         )
             #kb.add_row
         
         return {
             page: {
-                text: "Stories page #{page_number}", 
+                text: "Stories page #{page_number_to_show}", 
                 kb: kb.obtain
             }
         }
