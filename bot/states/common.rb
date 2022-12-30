@@ -139,6 +139,18 @@ module CommonInline
     def nop()
     end
 
+    def none() 
+        return {
+            page: {
+                text: 'meow',
+                kb: {
+                    inline_keyboard: []
+                }
+            }
+        }
+    end
+
+
     def get_stories_page(page_number = 0)
         if page_number < 0 then 
             return 
@@ -185,7 +197,7 @@ module CommonInline
             end
 
         result_string = [
-            if story.next_story then "🟢" else nil end,
+            if story.get_next_story then nil else "🟢" end,
             story.activity.name,
             readable_time_string,
             FormatHelper.format_date(story.created_at),
@@ -193,8 +205,21 @@ module CommonInline
             entries.filter do _1 end
                 .join(" | ")
         end
-        
-        ibutton(result_string, ikbhelper.nop)
+
+        ibutton(result_string, ikbhelper.show_story_detailed(story.id))
+    end
+
+    def show_story_detailed(story_id)
+
+        ikbhelper = InlineKeyboardHelper.new(myself)
+        kb = InlineKeyboardExtra.create 
+
+        return {
+            page: {
+                text: "Story detailed #{story_id}", 
+                kb: []
+            }
+        }
     end
 
 end
