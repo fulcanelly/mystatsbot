@@ -135,6 +135,10 @@ module CommonInline
 
     end
 
+
+    def nop()
+    end
+
     def get_stories_page(page_number = 0)
         if page_number < 0 then 
             return 
@@ -160,7 +164,7 @@ module CommonInline
 
         kb.add_row( 
             ibutton("<<", ikbhelper.get_stories_page(page_number - 1)),
-            ibutton("{ #{page_number_to_show} }", "1"),
+            ibutton("{ #{page_number_to_show} }", ikbhelper.nop()),
             ibutton(" >>", ikbhelper.get_stories_page(page_number + 1)),
         )
             #kb.add_row
