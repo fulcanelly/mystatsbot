@@ -33,6 +33,10 @@ module FormatHelper
             result += "s" if minutes > 1
             result += " " 
 
+            result += "#{seconds} sec" if seconds > 0
+            result += "s" if seconds > 1
+            result += " " 
+
             result.strip()
         end
     end
