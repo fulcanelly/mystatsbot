@@ -181,9 +181,16 @@ module CommonInline
     def __make_story_button(story, ikbhelper) 
         readable_time_string = FormatHelper
             .format_time(story.time_took).then do 
-                if _1.empty? then "" else _1 + " took" end
+                if _1.empty? then "" else "took " + _1 end
             end
-        ibutton("[#{story.created_at}] #{story.activity.name}, #{readable_time_string}", ikbhelper.nop)
+
+        result_string = [
+            story.activity.name,
+            readable_time_string,
+            FormatHelper.format_date(story.created_at),
+        ].join(" | ")
+
+        ibutton(result_string, ikbhelper.nop)
     end
 
 end

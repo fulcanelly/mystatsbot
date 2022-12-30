@@ -1,6 +1,12 @@
-#Geneerated by ChatGpt, and barely adjusted by me
+#Geneerated by ChatGpt, and slightly adjusted by me
 module FormatHelper 
-    class << self 
+    class << self
+        
+        # year.month.day hour:min
+        def format_date(date)
+            "#{date.year}-#{date.month}-#{date.day} #{date.hour}:#{date.min}"
+        end
+
         #time in secs => 12 hours 
         def format_time(timestamp)
             # Calculate the number of seconds in the timestamp
