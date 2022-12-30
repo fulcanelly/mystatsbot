@@ -185,11 +185,15 @@ module CommonInline
             end
 
         result_string = [
+            if story.next_story then "🟢" else nil end,
             story.activity.name,
             readable_time_string,
             FormatHelper.format_date(story.created_at),
-        ].join(" | ")
-
+        ].then do |entries| 
+            entries.filter do _1 end
+                .join(" | ")
+        end
+        
         ibutton(result_string, ikbhelper.nop)
     end
 
