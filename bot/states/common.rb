@@ -152,7 +152,7 @@ module CommonInline
             .offset(page_number * PAGE_SIZE)
             .limit(PAGE_SIZE).lazy 
             .map do |story|
-                ibutton("[#{story.created_at}] #{story.activity.name}\n", "loli")
+                __make_story_button(story, ikbhelper)
             end
             .each do 
                 kb.add_row(_1)
@@ -178,6 +178,13 @@ module CommonInline
         
     end
 
+    def __make_story_button(story, ikbhelper) 
+        readable_time_string = FormatHelper
+            .format_time(story.time_took).then do 
+                if _1.empty? then "" else _1 + " took" end
+            end
+        ibutton("[#{story.created_at}] #{story.activity.name}, #{readable_time_string}", ikbhelper.nop)
+    end
 
 end
 
