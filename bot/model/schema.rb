@@ -31,6 +31,24 @@ end
 
 class Story < ActiveRecord::Base
 
+    def get_next_story()
+        self.user()
+            .stories()
+            .order(id: :asc)
+            .where("id > ?", id)
+            .first()
+    end
+
+    def time_took 
+        next_story = get_next_story()
+
+        if next_story then 
+            next_story.created_at().to_i - self.created_at().to_i
+        else 
+            Time.now.to_i - self.created_at().to_i
+        end
+    end
+
     belongs_to :user
     belongs_to :activity
 
