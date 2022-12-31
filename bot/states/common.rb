@@ -158,8 +158,6 @@ module CommonInline
                 kb.add_row(_1)
             end
         
-        tools_row = []
-
         page_number_to_show = page_number + 1
 
         kb.add_row( 
@@ -167,7 +165,6 @@ module CommonInline
             ibutton("{ #{page_number_to_show} }", ikbhelper.nop()),
             ibutton(" >>", ikbhelper.get_stories_page(page_number + 1)),
         )
-            #kb.add_row
         
         return {
             page: {
@@ -212,7 +209,7 @@ module CommonInline
         kb = InlineKeyboardExtra.create 
 
         kb.add_row(
-            ibutton("Show more of #{story.activity.name}", ikbhelper.todo())
+            ibutton("Show more of #{story.activity.name}", ikbhelper.list_stories_of(story.activity.id))
         )
 
         kb.add_row(
@@ -242,6 +239,39 @@ module CommonInline
                 kb: kb.obtain()
             }
         }
+    end
+
+    def list_stories_of(activity_id, page_number = 0)
+        return if page_number < 0
+
+        ikbhelper = InlineKeyboardHelper.new(myself)
+        kb = InlineKeyboardExtra.create 
+
+        Activity.find_by(id: activity_id)
+            .stories()
+            .order(created_at: :desc)
+            .offset(page_number * PAGE_SIZE)
+            .limit(PAGE_SIZE)
+            .each do |story|
+                kb.add_row(__make_story_button(story, ikbhelper))
+            end
+
+
+        page_number_to_show = page_number + 1
+
+        kb.add_row( 
+            ibutton("<<", ikbhelper.list_stories_of(activity_id, page_number - 1)),
+            ibutton("{ #{page_number_to_show} }", ikbhelper.nop()),
+            ibutton(" >>", ikbhelper.list_stories_of(activity_id, page_number + 1)),
+        )
+        
+        return {
+            page: {
+                text: "Stories 📝 page #{page_number_to_show}", 
+                kb: kb.obtain
+            }
+        }
+ 
     end
 
     def edit_story(story_id) 
