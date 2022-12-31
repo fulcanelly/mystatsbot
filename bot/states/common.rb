@@ -236,13 +236,20 @@ module CommonInline
             ibutton("Back", ikbhelper.get_stories_page())
         )
         
+        status_text = if story.get_next_story then  
+                "Done ☑️"
+            else
+                "Ongoing 🟢"
+            end
+
         return {
             page: {
                 text: "
                 #{story.activity.name} story detailed 
+                
                 Started: #{FormatHelper.format_date(story.created_at)}
                 Time took: #{FormatHelper.format_time(story.time_took)} ⏳
-                
+                Status: #{status_text}
                 ".multitrim, 
                 kb: kb.obtain()
             }
