@@ -217,7 +217,7 @@ module CommonInline
 
         kb.add_row(
             ibutton("Delete 🗑", ikbhelper.todo()), 
-            ibutton("Edit ✏️", ikbhelper.todo())
+            ibutton("Edit ✏️", ikbhelper.edit_story(story_id))
         )
 
         kb.add_row(
@@ -240,6 +240,31 @@ module CommonInline
                 Status: #{status_text}
                 ".multitrim, 
                 kb: kb.obtain()
+            }
+        }
+    end
+
+    def edit_story(story_id) 
+        story = Story.find_by(id: story_id)
+        ikbhelper = InlineKeyboardHelper.new(myself)
+        kb = InlineKeyboardExtra.create 
+
+        kb.add_row(
+            ibutton("Change activity 🗒", ikbhelper.todo())
+        )
+
+        kb.add_row(
+            ibutton("Edit time ⏳", ikbhelper.todo())
+        )
+
+        kb.add_row(
+            ibutton("◀ Cancel", ikbhelper.show_story_detailed(story_id))
+        )
+        
+        return {
+            page: {
+                text: "Edit story #{story.activity.name} of #{FormatHelper.format_date(story.created_at)}",
+                kb: kb.obtain
             }
         }
     end
