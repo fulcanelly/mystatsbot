@@ -139,18 +139,6 @@ module CommonInline
     def nop()
     end
 
-    def none() 
-        return {
-            page: {
-                text: 'meow',
-                kb: {
-                    inline_keyboard: []
-                }
-            }
-        }
-    end
-
-
     def get_stories_page(page_number = 0)
         if page_number < 0 then 
             return 
