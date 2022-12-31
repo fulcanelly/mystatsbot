@@ -209,6 +209,12 @@ module CommonInline
         ibutton(result_string, ikbhelper.show_story_detailed(story.id))
     end
 
+    def todo 
+        return {
+            answer: "In development"
+        }
+    end
+
     # @param story_id [Integer]
     # @return [Hash]
     def show_story_detailed(story_id)
@@ -218,12 +224,12 @@ module CommonInline
         kb = InlineKeyboardExtra.create 
 
         kb.add_row(
-            ibutton("Show more of #{story.activity.name}", "todo")
+            ibutton("Show more of #{story.activity.name}", ikbhelper.todo())
         )
 
         kb.add_row(
-            ibutton("Delete 🗑", "todo"), 
-            ibutton("Edit ✏️", "todo")
+            ibutton("Delete 🗑", ikbhelper.todo()), 
+            ibutton("Edit ✏️", ikbhelper.todo())
         )
 
         kb.add_row(

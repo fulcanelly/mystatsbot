@@ -40,7 +40,6 @@ class InlineCbHandler < BaseState
     include CommonInline
 
     def handle(cbdata)
-        answer()
 
         data = myself.inline_keyboards.find_by(id: cbdata)
 
@@ -48,7 +47,10 @@ class InlineCbHandler < BaseState
 
         case eval(data.dump)
         in {page: {text:, kb:}}
+            answer()
             edit_text(message_id(), text, kb.to_h)
+        in {answer:}
+            answer(text: answer)
         else 
 
         end
