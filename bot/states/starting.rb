@@ -23,18 +23,6 @@ class MainMenuState < BaseState
     
 end
 
-# TODO from back
-
-class StateWithPast < BaseState
-
-    def suggest_it(text) 
-        super(text)
-            .option("Go back ") 
-   
-    end
-
-end
-
 class EnterActivityState < BaseState
     
     def initialize(back)
