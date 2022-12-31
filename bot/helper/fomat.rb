@@ -4,7 +4,7 @@ module FormatHelper
         
         # year.month.day hour:min
         def format_date(date)
-            "#{date.year}-#{date.month}-#{date.day} #{date.hour}:#{date.min}"
+            "#{date.year}-#{date.month}-#{date.day} #{date.hour.to_s.rjust(2, '0')}:#{date.min.to_s.rjust(2, '0')}"
         end
 
         #time in secs => 12 hours 
