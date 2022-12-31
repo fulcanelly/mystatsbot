@@ -3,7 +3,6 @@
 class MainMenuState < BaseState
     
     def run 
-        
         suggest_it("What to do ?")
             .tap do 
                 _1.option("Start activity") do 
@@ -36,8 +35,6 @@ class StateWithPast < BaseState
 
 end
 
-
-
 class EnterActivityState < BaseState
     
     def initialize(back)
@@ -57,7 +54,6 @@ class EnterActivityState < BaseState
                     switch_state(@back)
                 end
                 .exec
-            
                 
             unless suggest_it("Are you sure ?")
                 .option("Yes") do  true end
@@ -79,9 +75,6 @@ class EnterActivityState < BaseState
     end
 
 end
-
-
-
 
 class SettingState < BaseState
     include CommonInline
@@ -141,7 +134,6 @@ class SettingState < BaseState
 
 end
 
-
 class RenameActivity < BaseState
 
     def initialize(id)
@@ -160,6 +152,37 @@ class RenameActivity < BaseState
 
 
         switch_state SettingState.new(MainMenuState.new)
+    end
+
+end
+
+class ChangeActivityOfStoryState < BaseState 
+    
+    attr_accessor :story_id
+
+    def initialize(story_id) 
+        @story_id = story_id
+    end
+
+    def run 
+        update_activity = suggest_it("Select activity to change to")
+            .tap do |sg|
+                myself.activities.each do |activity| 
+                    sg.option(activity.name) do activity end
+                end
+            end
+            .option("Cancel") do 
+                switch_state MainMenuState.new 
+            end
+            .exec
+
+        Story.find_by(id: story_id)
+            .tap do 
+                _1.activity = update_activity
+            end
+            .save 
+
+        switch_state MainMenuState.new 
     end
 
 end

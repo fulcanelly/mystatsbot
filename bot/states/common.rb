@@ -280,7 +280,7 @@ module CommonInline
         kb = InlineKeyboardExtra.create 
 
         kb.add_row(
-            ibutton("Change activity 🗒", ikbhelper.todo())
+            ibutton("Change activity 🗒", ikbhelper.change_activity(story_id))
         )
 
         kb.add_row(
@@ -297,6 +297,10 @@ module CommonInline
                 kb: kb.obtain
             }
         }
+    end
+
+    def change_activity(story_id) 
+        switch_state ChangeActivityOfStoryState.new(story_id)
     end
 
 end
