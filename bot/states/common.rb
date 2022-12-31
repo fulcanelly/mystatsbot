@@ -16,52 +16,63 @@ module CommonInline
     
     PAGE_SIZE = 6
 
-    def get_story_page
+    def time_shift 
+        shift = myself.user_props.find_by(key_text: 'time_shift')
+        if shift then shift.data_dump.to_i else 0 end
+    end
+
+    def time_shift=(x) 
+        myself.user_props.find_by(key_text: 'time_shift').tap do 
+            if _1 then 
+                _1.update(data_dump: x.to_i)
+            else 
+                myself.user_props.create(
+                    key_text: 'time_shift',
+                    data_dump: x.to_i
+                )
+            end
+        end
 
     end
 
-    # def get_time_settings(time = Time.now.to_f)
-    #     time = Time.new time
-    #     ikbhelper = InlineKeyboardHelper.new(myself)
+    def add_hour 
+        self.time_shift = time_shift + (60 * 60)
+        get_time_settings
+    end
 
-    #     kb = InlineKeyboardExtra.create 
+    def sub_hour 
+        self.time_shift = time_shift - (60 * 60)
 
-    #     kb.add_row(
-    #         ibutton("Hours", "g"),
-    #         ibutton("Minutes", "g"),
-    #     )
+        get_time_settings
+    end
 
-    #     kb.add_row(
-    #         ibutton("🔼", ikbhelper.get_time_settings),
-    #         ibutton("🔼", "g"),   
-    #     )
 
+    def get_time_settings()
+        time = Time.now + time_shift
+
+        ikbhelper = InlineKeyboardHelper.new(myself)
        
-    #     kb.add_row(
-    #         ibutton(time.hour.to_s, "g"),
-    #         ibutton(time.min.to_s, "g")
-    #     )
+        kb = InlineKeyboardExtra.create 
 
-    #     kb.add_row(
-    #         ibutton("🔽", "ds"),
-    #         ibutton("🔽", "sd")
-    #     )
-        
-    #     kb.add_row(
-    #         ibutton(" ", "nop")
-    #     )
-    #     kb.add_row(
-    #         ibutton("Save", "1"),
-    #         ibutton("Cancel", "+")
-    #     )
-    
-    #     return {
-    #         page: {
-    #             text: "Time settings #{time}", 
-    #             kb: kb.obtain
-    #         }
-    #     }
-    # end
+        kb.add_row(
+            ibutton("🔼", ikbhelper.add_hour),
+        )
+       
+        kb.add_row(
+            ibutton(FormatHelper.format_date(time), "g"),
+        )
+
+        kb.add_row(
+            ibutton("🔽", ikbhelper.sub_hour),
+        )
+       
+        return {
+            page: {
+                text: "Time settings #{ FormatHelper.format_date(time) }", 
+                kb: kb.obtain
+            }
+        }
+    end
 
     def select_act_to_start(page_number = 0)
         kb = InlineKeyboardExtra.create 
@@ -185,7 +196,7 @@ module CommonInline
             if story.get_next_story then nil else "🟢" end,
             story.activity.name,
             readable_time_string,
-            FormatHelper.format_date(story.created_at),
+            FormatHelper.format_date(story.created_at + time_shift),
         ].then do |entries| 
             entries.filter do _1 end
                 .join(" | ")
@@ -232,7 +243,7 @@ module CommonInline
                 text: "
                 #{story.activity.name} story detailed 
                 
-                Started: #{FormatHelper.format_date(story.created_at)}
+                Started: #{FormatHelper.format_date(story.created_at + time_shift)}
                 Time took: #{FormatHelper.format_time(story.time_took)} ⏳
                 Status: #{status_text}
                 ".multitrim, 
@@ -293,7 +304,7 @@ module CommonInline
         
         return {
             page: {
-                text: "Edit story #{story.activity.name} of #{FormatHelper.format_date(story.created_at)}",
+                text: "Edit story #{story.activity.name} of #{FormatHelper.format_date(story.created_at + time_shift)}",
                 kb: kb.obtain
             }
         }

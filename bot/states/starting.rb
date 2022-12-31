@@ -97,11 +97,10 @@ class SettingState < BaseState
     end
 
     def time_settings 
-        say("Current timezone set to {x:y:idk!}")
-        # case get_time_settings()
-        # in {page: {text:, kb:}}
-        #     say(text, reply_markup: kb)
-        # end
+        case get_time_settings()
+        in {page: {text:, kb:}}
+            say(text, reply_markup: kb)
+        end
     end
 
     def run 
