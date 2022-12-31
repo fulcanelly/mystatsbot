@@ -209,18 +209,38 @@ module CommonInline
         ibutton(result_string, ikbhelper.show_story_detailed(story.id))
     end
 
+    # @param story_id [Integer]
+    # @return [Hash]
     def show_story_detailed(story_id)
+        story = Story.find_by(id: story_id)
 
         ikbhelper = InlineKeyboardHelper.new(myself)
         kb = InlineKeyboardExtra.create 
 
+        kb.add_row(
+            ibutton("Show more of #{story.activity.name}", "todo")
+        )
+
+        kb.add_row(
+            ibutton("Delete 🗑", "todo"), 
+            ibutton("Edit ✏️", "todo")
+        )
+
+        kb.add_row(
+            ibutton("Back", ikbhelper.get_stories_page())
+        )
+        
         return {
             page: {
-                text: "Story detailed #{story_id}", 
-                kb: []
+                text: "
+                #{story.activity.name} story detailed 
+                Started: #{FormatHelper.format_date(story.created_at)}
+                Time took: #{FormatHelper.format_time(story.time_took)} ⏳
+                
+                ".multitrim, 
+                kb: kb.obtain()
             }
         }
     end
 
 end
-
