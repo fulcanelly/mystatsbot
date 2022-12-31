@@ -171,7 +171,7 @@ module CommonInline
         
         return {
             page: {
-                text: "Stories page #{page_number_to_show}", 
+                text: "Stories 📝 page #{page_number_to_show}", 
                 kb: kb.obtain
             }
         }
@@ -221,7 +221,7 @@ module CommonInline
         )
 
         kb.add_row(
-            ibutton("Back", ikbhelper.get_stories_page())
+            ibutton("Back to stories 📝", ikbhelper.get_stories_page())
         )
         
         status_text = if story.get_next_story then  
