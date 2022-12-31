@@ -7,8 +7,15 @@ class User < ActiveRecord::Base
 
     has_one :state
     has_many :inline_keyboards
+    has_many :user_props
 
     accepts_nested_attributes_for :activities, :stories, :state
+end
+
+
+class UserProp < ActiveRecord::Base 
+
+    belongs_to :user 
 
 end
 

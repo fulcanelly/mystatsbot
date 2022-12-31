@@ -4,6 +4,13 @@ require_relative './connect'
 class CreateAll < CoreCreateAll
     def change 
 
+        create_table :user_props, if_not_exists: true do |t|
+            t.string :key_text
+            t.string :data_dump
+
+            t.belongs_to :user
+        end
+        
         create_table :inline_keyboards, if_not_exists: true do |t|
             t.string :dump 
             t.string :message
