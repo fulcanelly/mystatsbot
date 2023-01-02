@@ -8,11 +8,15 @@ services:
 
     volumes:
       - ./bot:/app
+      - ./cachned_gems:/gems
+      
     depends_on: 
       - postgres-setup
+
     stdin_open: true
     tty: true
     restart: always
+
     environment:
       - TG_TOKEN
       - PG_PASS
