@@ -2,10 +2,22 @@
 
 This is a bot for keeping track of done things and analyzing spent time
  
-# [Bot datasheet](./bot/DATASHEET.md) 
+ 
+## How to run 
+
+1. Edit [env variables](./.env)
+  - add telegram bot token
+  - set posgresql password
+2. Start bot 
+```
+docker compose up --build
+```
 
 
-# Todo list (From high to low priority)
+## [Bot datasheet](./bot/DATASHEET.md) 
+
+
+## Todo list (From high to low priority)
  - [ ] Setup state
  - [x] More control over activities (delete, edit)
  - [ ] Make data visualization better 
