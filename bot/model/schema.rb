@@ -38,6 +38,22 @@ end
 
 class Story < ActiveRecord::Base
 
+    #TODO make it run on timer
+    def self.destroy_rarely_used()
+        old_condition = Time.now() - ActiveSupport::Duration.days(5).in_seconds
+
+        self.all()
+            .where("updated_at < ?", old_condition)
+            .destroy_all()
+    end
+
+    after_find do |it|
+        if it.updated_at.to_date != Time.now.to_date then
+            it.updated_at = Time.now
+            it.save
+        end
+    end
+
     def get_next_story()
         self.user()
             .stories()
