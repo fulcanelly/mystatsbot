@@ -5,3 +5,5 @@ gem 'colored'
 gem 'pg'
 gem 'recursive-open-struct'
 gem 'awesome_print'
+
+gem 'bunny'
