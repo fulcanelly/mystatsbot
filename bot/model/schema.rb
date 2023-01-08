@@ -34,6 +34,11 @@ class Activity < ActiveRecord::Base
 
     accepts_nested_attributes_for :user
 
+    #WARN use view for that
+    def time_took_at?(day)
+
+    end
+
 end
 
 class Story < ActiveRecord::Base
@@ -44,6 +49,14 @@ class Story < ActiveRecord::Base
             .order(id: :asc)
             .where("id > ?", id)
             .first()
+    end
+
+    #WARN use view for that
+    def was_done_at?(day)
+        started_at = self.created_at.to_date
+        ended_at = (self.created_at + self.time_took).to_date
+
+        started_at <= day && ended_at >= day
     end
 
     def time_took
