@@ -39,13 +39,24 @@ class InlineCbHandler < BaseState
 
     include CommonInline
 
+    def exec_inline_query_action(data)
+        begin
+            data = OpenStruct.new(
+                Marshal.load(Base64.decode64(data)))
+            self.send(data.name, *data.args, **data.vargs)
+        rescue => err
+            puts err.to_s.red
+            eval(data)
+        end
+    end
+
     def handle(cbdata)
 
         data = myself.inline_keyboards.find_by(id: cbdata)
 
         return unless data
 
-        case eval(data.dump)
+        case exec_inline_query_action(data.dump)
         in {page: {text:, kb:}}
             answer()
             edit_text(message_id(), text, kb.to_h)
@@ -55,8 +66,6 @@ class InlineCbHandler < BaseState
 
         end
 
-
     end
-
 
 end
