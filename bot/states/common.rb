@@ -5,8 +5,13 @@ class InlineKeyboardHelper
         @user = user
     end
 
-    def method_missing(name, *args)
-        @user.inline_keyboards.create(dump: "#{name}(#{args.join(",")})").id
+    def method_missing(name, *args, **vargs)
+        data = {
+            name:,
+            args:,
+            vargs:
+        }
+        @user.inline_keyboards.create(dump: Base64.encode64(Marshal.dump(data))).id
     end
 
 end

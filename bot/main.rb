@@ -8,7 +8,7 @@ require 'recursive-open-struct'
 require 'logger'
 require 'colored'
 require 'awesome_print'
-
+require 'base64'
 require_relative './tg-toolkit/src/autoload'
 
 Autoloader.new.load_from(__dir__)
