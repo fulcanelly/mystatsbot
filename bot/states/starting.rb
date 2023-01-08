@@ -1,11 +1,11 @@
 
 
 class MainMenuState < BaseState
-    
-    def run 
+
+    def run
         suggest_it("What to do ?")
-            .tap do 
-                _1.option("Start activity") do 
+            .tap do
+                _1.option("Start activity") do
                     switch_state EnterActivityState.new(MainMenuState.new)
                 end unless self.myself.activities.empty?
 
@@ -13,45 +13,45 @@ class MainMenuState < BaseState
             .option("Settings") do
                 switch_state SettingState.new(MainMenuState.new)
             end
-            .option("Show data") do 
+            .option("Show data") do
                 switch_state ShowDataState.new(MainMenuState.new)
             end
             .exec
 
         switch_state MainMenuState.new
     end
-    
+
 end
 
 class EnterActivityState < BaseState
-    
+
     def initialize(back)
         @back = back
     end
 
-    def run         
-        loop do 
+    def run
+        loop do
             #select activity
             act = suggest_it("Select activity to start")
                 .tap do |sg|
-                    myself.activities.each do |act| 
+                    myself.activities.each do |act|
                         sg.option(act.name) do act end
                     end
                 end
-                .option("Back") do 
+                .option("Back") do
                     switch_state(@back)
                 end
                 .exec
-                
+
             unless suggest_it("Are you sure ?")
                 .option("Yes") do  true end
                 .option("No (Cancel)") do end
-                .exec then 
+                .exec then
                 next
             end
 
 
-            #save start time 
+            #save start time
             myself.stories.create(
                 status: "start",
                 activity: act
@@ -72,13 +72,13 @@ class SettingState < BaseState
     end
 
     def activity_settings()
-        run = true 
-        while run 
+        run = true
+        while run
 
             actlist = myself.activities
                 .map(&:name).join("\n")
 
-            say_ikb(get_activities_settings()) 
+            say_ikb(get_activities_settings())
 
             suggest_it("Your activites")
                 .option("Add new activity") do
@@ -88,34 +88,34 @@ class SettingState < BaseState
                     myself.activities << Activity.new(name: text)
                     myself.save
                 end
-                .option("Back") do 
-                    run = false 
+                .option("Back") do
+                    run = false
                 end
                 .exec
         end
 
     end
 
-    def time_settings 
+    def time_settings
         case get_time_settings()
         in {page: {text:, kb:}}
             say(text, reply_markup: kb)
         end
     end
 
-    def run 
+    def run
         suggest_it("Settings")
-            .option("Activity settings") do 
+            .option("Activity settings") do
                 activity_settings()
             end
-            .option("Time sttings") do 
+            .option("Time sttings") do
                 time_settings()
             end
-            .option("Back") do 
+            .option("Back") do
                 switch_state(@back)
             end
             .exec()
-        
+
         switch_state __clean_state(self)
     end
 
@@ -124,16 +124,16 @@ end
 class RenameActivity < BaseState
 
     def initialize(id)
-        @id = id  
+        @id = id
     end
 
-    def run 
+    def run
         activity = Activity.find_by(id: @id)
         say "Enter new name for activity #{activity.name}"
-        new_name = expect_text 
+        new_name = expect_text
 
-        activity.tap do 
-            activity.name = new_name 
+        activity.tap do
+            activity.name = new_name
             activity.save
         end
 
@@ -143,33 +143,33 @@ class RenameActivity < BaseState
 
 end
 
-class ChangeActivityOfStoryState < BaseState 
-    
+class ChangeActivityOfStoryState < BaseState
+
     attr_accessor :story_id
 
-    def initialize(story_id) 
+    def initialize(story_id)
         @story_id = story_id
     end
 
-    def run 
+    def run
         update_activity = suggest_it("Select activity to change to")
             .tap do |sg|
-                myself.activities.each do |activity| 
+                myself.activities.each do |activity|
                     sg.option(activity.name) do activity end
                 end
             end
-            .option("Cancel") do 
-                switch_state MainMenuState.new 
+            .option("Cancel") do
+                switch_state MainMenuState.new
             end
             .exec
 
         Story.find_by(id: story_id)
-            .tap do 
+            .tap do
                 _1.activity = update_activity
             end
-            .save 
+            .save
 
-        switch_state MainMenuState.new 
+        switch_state MainMenuState.new
     end
 
 end
