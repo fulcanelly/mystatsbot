@@ -2,12 +2,12 @@
 
 class AnswerCallbackQueryAction < BaseAction
     attr_accessor :data, :callback_query_id
-    
+
     def initialize(callback_query_id, **data)
         @callback_query_id = callback_query_id
         @data = data
     end
-    
+
     def exec(ctx)
         ctx.extra.bot.answer_callback_query({callback_query_id:, **data})
     end
@@ -25,12 +25,12 @@ class InlineCbHandler < BaseState
         @cbq = cbq
     end
 
-    def callback_query_id() = cbq.id 
+    def callback_query_id() = cbq.id
 
     def message_id() = cbq.message.message_id
-    
-        
-    def answer(**data) 
+
+
+    def answer(**data)
         Fiber.yield AnswerCallbackQueryAction.new(callback_query_id, **data)
     end
 
@@ -43,7 +43,7 @@ class InlineCbHandler < BaseState
 
         data = myself.inline_keyboards.find_by(id: cbdata)
 
-        return unless data        
+        return unless data
 
         case eval(data.dump)
         in {page: {text:, kb:}}
@@ -51,12 +51,12 @@ class InlineCbHandler < BaseState
             edit_text(message_id(), text, kb.to_h)
         in {answer:}
             answer(text: answer)
-        else 
+        else
 
         end
 
 
     end
-    
-    
+
+
 end
