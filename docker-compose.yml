@@ -48,7 +48,21 @@ services:
       - postgres
     restart: "no"
   
+  rabbitmq:
+    networks: ['mynetwork']
+    image: 'rabbitmq:management'
 
+    ports:
+      - 5672:5672
+
+    volumes:
+      - ./rmq:/var/lib/rabbitmq/mnesia/
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:15672"]
+      interval: 1s
+      timeout: 1s
+      retries: 10
 
 networks: {
   mynetwork: {}

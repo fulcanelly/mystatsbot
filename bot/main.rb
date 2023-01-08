@@ -8,8 +8,30 @@ require 'recursive-open-struct'
 require 'logger'
 require 'colored'
 require 'awesome_print'
-
 require_relative './tg-toolkit/src/autoload'
+
+require 'bunny'
+
+
+def setup_rabbitmq()
+
+    connection = Bunny.new(hostname: 'rabbitmq')
+    connection.start
+    channel = connection.create_channel
+
+    queue = channel.queue('start')
+    channel.default_exchange.publish('Hello World!', routing_key: queue.name)
+
+    queue.subscribe(block: false) do |_delivery_info, _properties, body|
+    # ap Thread.list
+
+        puts " [x] Received #{body}"
+        sleep 0.5
+        channel.default_exchange.publish(Time.now.to_s, routing_key: queue.name)
+
+    end
+
+end
 
 Autoloader.new.load_from(__dir__)
 
