@@ -39,6 +39,7 @@ class InlineCbHandler < BaseState
 
     include CommonInline
 
+    #TODO move to helpers
     def exec_inline_query_action(data)
         begin
             data = OpenStruct.new(
@@ -50,11 +51,11 @@ class InlineCbHandler < BaseState
         end
     end
 
+
     def handle(cbdata)
+        data = InlineKeyboard.find_by(id: cbdata)
 
-        data = myself.inline_keyboards.find_by(id: cbdata)
-
-        return unless data
+        return answer() unless data
 
         case exec_inline_query_action(data.dump)
         in {page: {text:, kb:}}

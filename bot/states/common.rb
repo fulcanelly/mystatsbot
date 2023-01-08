@@ -11,7 +11,15 @@ class InlineKeyboardHelper
             args:,
             vargs:
         }
-        @user.inline_keyboards.create(dump: Base64.encode64(Marshal.dump(data))).id
+
+        dump = Base64.encode64(Marshal.dump(data))
+        found = InlineKeyboard.find_by(dump:)
+
+        if found then
+            found
+        else
+            InlineKeyboard.create(dump:)
+        end.id
     end
 
 end
