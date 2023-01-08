@@ -13,13 +13,13 @@ class User < ActiveRecord::Base
 end
 
 
-class UserProp < ActiveRecord::Base 
+class UserProp < ActiveRecord::Base
 
-    belongs_to :user 
+    belongs_to :user
 
 end
 
-class State < ActiveRecord::Base 
+class State < ActiveRecord::Base
 
     belongs_to :user
 
@@ -27,7 +27,7 @@ class State < ActiveRecord::Base
 
 end
 
-class Activity < ActiveRecord::Base 
+class Activity < ActiveRecord::Base
 
     belongs_to :user
     has_many :stories
@@ -46,12 +46,12 @@ class Story < ActiveRecord::Base
             .first()
     end
 
-    def time_took 
+    def time_took
         next_story = get_next_story()
 
-        if next_story then 
+        if next_story then
             next_story.created_at().to_i - self.created_at().to_i
-        else 
+        else
             Time.now.to_i - self.created_at().to_i
         end
     end
@@ -66,5 +66,5 @@ end
 class InlineKeyboard < ActiveRecord::Base
 
     belongs_to :user
-    
+
 end
