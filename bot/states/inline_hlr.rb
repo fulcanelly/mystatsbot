@@ -64,7 +64,7 @@ class InlineCbHandler < BaseState
         in {answer:}
             answer(text: answer)
         else
-
+            answer()
         end
 
     end
