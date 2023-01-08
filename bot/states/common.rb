@@ -162,7 +162,7 @@ module CommonInline
     def nop()
     end
 
-    def get_stories_by_days(page_number = 0, day = 0)
+    def get_stories_by_days(page_number = 0, target_day = Time.now.to_date())
         ikbhelper = InlineKeyboardHelper.new(myself)
         kb = InlineKeyboardExtra.create
 
@@ -171,9 +171,6 @@ module CommonInline
             ibutton("👉 by days", ikbhelper.nop()),
         )
 
-        target_day = Time.now.to_date()
-
-        #WARN take into account time shift
         myself.stories()
             .order(created_at: :desc)
             .lazy
@@ -185,9 +182,15 @@ module CommonInline
                 kb.add_row(__make_story_button(story, ikbhelper))
             end
 
+        kb.add_row(
+            ibutton("<<", ikbhelper.get_stories_by_days(page_number, target_day + 1)),
+            ibutton(target_day.to_s, ikbhelper.nop()),
+            ibutton(">>", ikbhelper.get_stories_by_days(page_number, target_day - 1)),
+        )
+
         return {
             page: {
-                text: "Stories at #{day} day 📊",
+                text: "Stories at #{target_day} day 📊",
                 kb: kb.obtain
             }
         }
