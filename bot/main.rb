@@ -1,4 +1,5 @@
 require 'active_record'
+require 'active_support/duration'
 require 'ostruct'
 require 'net/http'
 require 'json'
