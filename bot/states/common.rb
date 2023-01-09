@@ -179,7 +179,9 @@ module CommonInline
             end
             .take(PAGE_SIZE)
             .each do |story|
-                kb.add_row(__make_story_button(story, ikbhelper))
+                this_page = ikbhelper.get_stories_by_days(page_number, target_day)
+                kb.add_row(
+                    __make_story_button(this_page, story, ikbhelper))
             end
 
         kb.add_row(
@@ -214,7 +216,8 @@ module CommonInline
             .offset(page_number * PAGE_SIZE)
             .limit(PAGE_SIZE).lazy
             .map do |story|
-                __make_story_button(story, ikbhelper)
+                __make_story_button(
+                    ikbhelper.get_stories_page(page_number), story, ikbhelper)
             end
             .each do
                 kb.add_row(_1)
@@ -237,9 +240,9 @@ module CommonInline
 
     end
 
-    def __make_story_button(story, ikbhelper)
-        readable_time_string = FormatHelper
-            .format_time(story.time_took).then do
+    def __make_story_button(return_page, story, ikbhelper)
+        readable_time_string = FormatHelper.format_time(story.time_took)
+            .then do
                 if _1.empty? then "" else "took " + _1 end
             end
 
@@ -253,7 +256,7 @@ module CommonInline
                 .join(" | ")
         end
 
-        ibutton(result_string, ikbhelper.show_story_detailed(story.id))
+        ibutton(result_string, ikbhelper.show_story_detailed(return_page, story.id))
     end
 
     def todo
@@ -264,7 +267,7 @@ module CommonInline
 
     # @param story_id [Integer]
     # @return [Hash]
-    def show_story_detailed(story_id)
+    def show_story_detailed(return_page, story_id)
         story = Story.find_by(id: story_id)
 
         ikbhelper = InlineKeyboardHelper.new(myself)
@@ -280,7 +283,7 @@ module CommonInline
         )
 
         kb.add_row(
-            ibutton("Back to stories 📝", ikbhelper.get_stories_page())
+            ibutton("Back to stories 📝", return_page)
         )
 
         status_text = if story.get_next_story then
