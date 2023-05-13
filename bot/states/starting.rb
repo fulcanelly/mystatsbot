@@ -16,6 +16,9 @@ class MainMenuState < BaseState
             .option("Show data") do
                 switch_state ShowDataState.new(MainMenuState.new)
             end
+            .option('Show graph') do
+                switch_state ShowDataOnSite.new
+            end
             .exec
 
         switch_state MainMenuState.new
