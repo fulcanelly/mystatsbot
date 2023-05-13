@@ -12,6 +12,8 @@ require 'awesome_print'
 require 'base64'
 require_relative './tg-toolkit/src/autoload'
 
+return if __FILE__ != $0
+
 Autoloader.new.load_from(__dir__)
 
 token = ENV['TG_TOKEN']
