@@ -1,4 +1,4 @@
-bot/repl.rbrequire_relative './tg-toolkit/src/autoload'
+require_relative './tg-toolkit/src/autoload'
 require 'irb'
 
 Autoloader.new.load_from(__dir__)
