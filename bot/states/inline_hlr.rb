@@ -2,12 +2,12 @@
 
 class AnswerCallbackQueryAction < BaseAction
     attr_accessor :data, :callback_query_id
-    
+
     def initialize(callback_query_id, **data)
         @callback_query_id = callback_query_id
         @data = data
     end
-    
+
     def exec(ctx)
         ctx.extra.bot.answer_callback_query({callback_query_id:, **data})
     end
@@ -25,12 +25,12 @@ class InlineCbHandler < BaseState
         @cbq = cbq
     end
 
-    def callback_query_id() = cbq.id 
+    def callback_query_id() = cbq.id
 
     def message_id() = cbq.message.message_id
-    
-        
-    def answer(**data) 
+
+
+    def answer(**data)
         Fiber.yield AnswerCallbackQueryAction.new(callback_query_id, **data)
     end
 
@@ -39,24 +39,34 @@ class InlineCbHandler < BaseState
 
     include CommonInline
 
+    #TODO move to helpers
+    def exec_inline_query_action(data)
+        begin
+            data = OpenStruct.new(
+                Marshal.load(Base64.decode64(data)))
+            self.send(data.name, *data.args, **data.vargs)
+        rescue => err
+            puts err.to_s.red
+            eval(data)
+        end
+    end
+
+
     def handle(cbdata)
+        data = InlineKeyboard.find_by(id: cbdata)
 
-        data = myself.inline_keyboards.find_by(id: cbdata)
+        return answer() unless data
 
-        return unless data        
-
-        case eval(data.dump)
+        case exec_inline_query_action(data.dump)
         in {page: {text:, kb:}}
             answer()
             edit_text(message_id(), text, kb.to_h)
         in {answer:}
             answer(text: answer)
-        else 
-
+        else
+            answer()
         end
 
-
     end
-    
-    
+
 end

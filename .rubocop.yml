@@ -1,0 +1,9 @@
+Style/MultilineBlockChain:
+    Enabled: false
+Style/Documentation:
+    Enabled: false
+Style/EmptyMethod:
+    Enabled: false
+
+AllCops:
+    NewCops: enable
