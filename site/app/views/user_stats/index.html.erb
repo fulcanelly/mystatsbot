@@ -1,0 +1,14 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>User stats</h1>
+
+<div id="user_stats">
+  <% @user_stats.each do |user_stat| %>
+    <%= render user_stat %>
+    <p>
+      <%= link_to "Show this user stat", user_stat %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New user stat", new_user_stat_path %>
