@@ -12,8 +12,12 @@ services:
     stdin_open: true
     tty: true
     restart: always
+
     ports:
-    - 3000:3000/tcp
+      - 3000:3000/tcp
+
+    volumes:
+      - ./site:/app
 
   bot:
     networks: ['mynetwork']
