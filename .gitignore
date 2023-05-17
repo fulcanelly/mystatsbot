@@ -1,4 +1,6 @@
 .DS_Store
 .env
-./db
-./.idea
+db
+.idea
+shared
+cachned_gems
