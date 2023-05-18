@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, {useEffect, useRef, useState} from 'react';
 import {Chart, ReactGoogleChartEvent} from "react-google-charts";
-//import style from './HelloWorld.module.css';
+import './HelloWorld.module.css';
 
 const options = {
     title: "Red Sox Attendance",
@@ -18,6 +18,7 @@ const types = [
     }
 ]
 
+
 const data = [
     types,
     [new Date(2012, 3, 13), 37032],
@@ -25,15 +26,6 @@ const data = [
     [new Date(2012, 3, 15), 38024],
     [new Date(2012, 3, 16), 38108],
     [new Date(2012, 3, 17), 38229],
-    // Many rows omitted for brevity.
-    [new Date(2013, 9, 4), 38177],
-    [new Date(2013, 9, 5), 38705],
-    [new Date(2013, 9, 12), 38210],
-    [new Date(2013, 9, 13), 38029],
-    [new Date(2013, 9, 19), 38823],
-    [new Date(2013, 9, 23), 38345],
-    [new Date(2013, 9, 24), 38436],
-    [new Date(2013, 9, 30), 38447],
 ]
 
 
@@ -84,7 +76,7 @@ const InfoCalendar = () => {
 // Use the state and event handler in the ExampleCalendarChart component
 const ExampleCalendarChart = ({ setSelected }) => {
 
-    const selectEventHandler = {
+    const selectEventHandler: ReactGoogleChartEvent = {
         eventName: "select",
         callback: ({chartWrapper}) => {
             const chart = chartWrapper.getChart();
