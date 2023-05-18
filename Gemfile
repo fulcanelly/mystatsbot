@@ -46,3 +46,7 @@ group :development do
   # gem "spring"
 end
 
+
+gem "shakapacker", "= 6.6"
+
+gem "react_on_rails", "= 13.3"
