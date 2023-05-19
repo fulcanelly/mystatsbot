@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+      "declaration": false,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "lib": ["ES7", "DOM"],
+      "module": "ES2022",
+      "moduleResolution": "node",
+      "sourceMap": true,
+      "target": "ES2022",
+      "jsx": "react",
+      "noEmit": true
+    },
+    "exclude": ["**/*.spec.ts", "node_modules", "vendor", "public"],
+    "compileOnSave": false
+}

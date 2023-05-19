@@ -1,6 +1,23 @@
 version: "3.3"
 
 services:
+  site:
+    networks: ['mynetwork']
+    build: ./site
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    stdin_open: true
+    tty: true
+    restart: always
+
+    ports:
+      - 3000:3000/tcp
+
+    volumes:
+      - ./site:/app
 
   bot:
     networks: ['mynetwork']
@@ -11,7 +28,8 @@ services:
       - ./cachned_gems:/gems
 
     depends_on:
-      - postgres-setup
+      postgres:
+        condition: service_healthy
 
     stdin_open: true
     tty: true
@@ -39,15 +57,11 @@ services:
     stdin_open: true
     tty: true
 
-  postgres-setup:
-    networks: ['mynetwork']
-    environment:
-      POSTGRES_PASSWORD: $PG_PASS
-
-    build: ./postgres
-    depends_on:
-      - postgres
-    restart: "no"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 2s
+      timeout: 50s
+      retries: 3
 
 
 networks:
