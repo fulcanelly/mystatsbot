@@ -1,7 +1,11 @@
 Rails.application.routes.draw do
   get 'hello_world', to: 'hello_world#index'
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Defines the root path route ("/")
   root "hello_world#index"
+
+  namespace :api do
+    namespace :v1 do
+      resources :tg_posts
+      get 'posts_per_day'
+    end
+  end
 end
