@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, {useEffect, useRef, useState} from 'react';
 import {Chart, ReactGoogleChartEvent} from "react-google-charts";
 import './HelloWorld.module.css';
+import {getPostsPerDay} from "../../api/tg_posts";
 
 const options = {
     title: "Red Sox Attendance",
@@ -76,6 +77,8 @@ const InfoCalendar = () => {
 // Use the state and event handler in the ExampleCalendarChart component
 const ExampleCalendarChart = ({ setSelected }) => {
 
+    const [stats, setStats] = useState([])
+
     const selectEventHandler: ReactGoogleChartEvent = {
         eventName: "select",
         callback: ({chartWrapper}) => {
@@ -85,15 +88,35 @@ const ExampleCalendarChart = ({ setSelected }) => {
             setSelected(selection)
         }
     }
+
+    const today = new Date();
+    const lastYear = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
+
+    const setup = async () => {
+        const postsByDay = await getPostsPerDay(lastYear.toDateString(), today.toDateString())
+        console.log(postsByDay)
+        setStats(postsByDay.map(([day, count]) => [new Date(day), count]) ?? [])
+    }
+
+    useEffect(() => {
+        setup()
+    },[])
+
     return <Chart
         chartType="Calendar"
         width="100%"
         height="400px"
-        data={data}
+        data={[
+            types,
+            ...stats
+        ]}
         options={options}
         chartEvents={[selectEventHandler]}
         />
 };
+
+
+
 const HelloWorld = (props) => {
   const [name, setName] = useState(props.name);
 

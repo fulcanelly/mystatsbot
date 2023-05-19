@@ -5,6 +5,7 @@ from datetime import datetime
 from config.vars import api_id, api_hash
 
 from pyrogram import types, raw, utils, enums
+from lib.msg_per_day import AllMyMessages
 
 from lib.all_my_messages import CountAllMyMessagesPerChats
 import api.tg_posts
@@ -71,7 +72,10 @@ async def get_dialogs_and_count_messages():
 
 print(CountAllMyMessagesPerChats)
 
-api.tg_posts.create('a:3443', datetime.today())
+# api.tg_posts.create('a:3443', datetime.today())
+# api.tg_posts.create('a23:3443', datetime.today())
+# api.tg_posts.create('a232:3443', datetime.today())
+
 # TODO csv
 # TODO
         # if dialog.chat.type in ('user', 'supergroup'):
@@ -79,3 +83,8 @@ api.tg_posts.create('a:3443', datetime.today())
         #     async for message in client.search_messages(chat_id, filter=user_filter):
         #         count_messages(message)
 #client.run(ChatStatsCollector().start())
+def handle_message(message: types.Message):
+    unique_id = f"{message.chat.id}:{message.id}"
+    api.tg_posts.create(unique_id, message.date)
+
+client.run(AllMyMessages(client, handle_message).start())

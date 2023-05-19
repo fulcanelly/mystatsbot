@@ -1,9 +1,4 @@
-class Api::V1::TgPostsController < ApplicationController
-  before_action :set_tg_post, only: [:show, :update, :destroy]
-
-  def show
-    render json: @tg_post
-  end
+class Api::V1::TgPostsController < ActionController::API
 
   def create
     date = Date.parse(params[:serialized_date])
@@ -25,9 +20,14 @@ class Api::V1::TgPostsController < ApplicationController
     start_date = Date.parse(params[:start_date])
     end_date = Date.parse(params[:end_date])
 
-    posts_count_per_day = TgPost.where(created_at: start_date..end_date)
-      .group('DATE(created_at)')
-      .count
+    if (end_date - start_date).to_i > 365
+      render json: { error: 'Date range exceeds one year' }, status: :unprocessable_entity
+      return
+    end
+
+    posts_count_per_day = TgPost.joins(:day).where(created_at: start_date..end_date)
+      .group('days.date')
+      .count.to_a
 
     render json: posts_count_per_day
   end
