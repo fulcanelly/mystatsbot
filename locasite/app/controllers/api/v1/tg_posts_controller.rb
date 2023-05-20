@@ -17,15 +17,16 @@ class Api::V1::TgPostsController < ActionController::API
   end
 
   def posts_per_day
-    start_date = Date.parse(params[:start_date])
-    end_date = Date.parse(params[:end_date])
+    # TODO
+    # start_date = Date.parse(params[:start_date])
+    # end_date = Date.parse(params[:end_date]) + 1
 
-    if (end_date - start_date).to_i > 365
-      render json: { error: 'Date range exceeds one year' }, status: :unprocessable_entity
-      return
-    end
+    # if (end_date - start_date).to_i > 365
+    #   render json: { error: 'Date range exceeds one year' }, status: :unprocessable_entity
+    #   return
+    # end
 
-    posts_count_per_day = TgPost.joins(:day).where(created_at: start_date..end_date)
+    posts_count_per_day = TgPost.joins(:day)#.where(days: { date: start_date..end_date })
       .group('days.date')
       .count.to_a
 
