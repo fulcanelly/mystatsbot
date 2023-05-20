@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, {useEffect, useRef, useState} from 'react';
 import {Chart, ReactGoogleChartEvent} from "react-google-charts";
 import './HelloWorld.module.css';
-import {getPostsPerDay} from "../../api/tg_posts";
+import { getChatStatsOfDay, getPostsPerDay } from "../../api/tg_posts";
 
 const options = {
     title: "Messages sent by You per day",
@@ -21,15 +21,25 @@ const types = [
 
 
 const InfoCalendar = () => {
-
   const [selected, setSelected] = useState(null)
+  const [dayInfo, setDayInfo] = useState([])
 
+  useEffect(() => {
+    if (!selected) return void setDayInfo([])
+    getChatStatsOfDay(selected).then(setDayInfo)
+  }, [selected])
 
   return <>
       <ExampleCalendarChart setSelected={setSelected}/>
       {selected && <h2>Currently selected: {JSON.stringify(selected)} </h2>}
+      {dayInfo.map(([chat, count]) => <ChatStatsPerDay chat={chat} messageCount={count}/>)}
   </>
 }
+
+const ChatStatsPerDay = ({ chat, messageCount }) => <>
+        chat: <h1>{chat}</h1>
+        messages count: <p>{messageCount}</p>
+    </>
 
 
 // TODO show detailed info of day on select
@@ -44,12 +54,12 @@ const ExampleCalendarChart = ({ setSelected }) => {
             const chart = chartWrapper.getChart();
             const selection = chart.getSelection() as any;
 
-            setSelected(selection)
-
-            console.log(selection)
-
             if (selection[0].row) {
-                console.log(stats[selection[0].row])
+                const datestr = stats[selection[0].row][0]
+                const date = new Date(datestr)
+                setSelected(date)
+            } else {
+                setSelected(null)
             }
         }
     }
@@ -59,14 +69,10 @@ const ExampleCalendarChart = ({ setSelected }) => {
 
     const setup = async () => {
         const postsByDay = await getPostsPerDay(lastYear.toDateString(), today.toDateString())
-        console.log(postsByDay)
         setStats(postsByDay.map(([day, count]) => [new Date(day), count]) ?? [])
-
     }
 
     useEffect(() => {
-        console.log('x------->')
-        //setup()
         setInterval(setup, 1000)
         // TODO use cables to watch for updates
     },[])
@@ -74,7 +80,7 @@ const ExampleCalendarChart = ({ setSelected }) => {
     return <Chart
         chartType="Calendar"
         width="100%"
-        height="1000px"
+        height="800px"
         data={[
             types,
             ...stats
@@ -87,19 +93,9 @@ const ExampleCalendarChart = ({ setSelected }) => {
 
 
 const HelloWorld = (props) => {
-  const [name, setName] = useState(props.name);
-
   return (
     <div>
       <InfoCalendar/>
-      <h3>Hello=, {name}!</h3>
-      <hr />
-      <form>
-        <label className={"style.bright"} htmlFor="name">
-          Say hello to:
-          <input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} />
-        </label>
-      </form>
     </div>
   );
 };
