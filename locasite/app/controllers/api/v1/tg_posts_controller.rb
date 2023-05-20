@@ -41,6 +41,6 @@ class Api::V1::TgPostsController < ActionController::API
   private
 
   def tg_post_params
-    params.require(:tg_post).permit(:tg_post_id, :day_id)
+    params.require(:tg_post).permit(:chat_id, :message_id)
   end
 end
