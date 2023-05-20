@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_19_211312) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_20_203126) do
   create_table "days", force: :cascade do |t|
     t.date "date"
     t.datetime "created_at", null: false
@@ -19,12 +19,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_19_211312) do
   end
 
   create_table "tg_posts", force: :cascade do |t|
-    t.string "tg_post_id"
     t.integer "day_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "chat_id"
+    t.string "message_id"
+    t.index ["chat_id", "message_id"], name: "index_tg_posts_on_chat_id_and_message_id", unique: true
     t.index ["day_id"], name: "index_tg_posts_on_day_id"
-    t.index ["tg_post_id"], name: "index_tg_posts_on_tg_post_id", unique: true
   end
 
   add_foreign_key "tg_posts", "days"

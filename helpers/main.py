@@ -84,8 +84,7 @@ print(CountAllMyMessagesPerChats)
         #         count_messages(message)
 #client.run(ChatStatsCollector().start())
 def handle_message(message: types.Message):
-    unique_id = f"{message.chat.id}:{message.id}"
-    api.tg_posts.create(unique_id, message.date)
+    api.tg_posts.create(message.chat.id, message.id, message.date)
 
 
 class CountMessagesPerDays():
