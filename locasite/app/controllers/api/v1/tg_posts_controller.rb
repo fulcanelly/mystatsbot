@@ -14,6 +14,12 @@ class Api::V1::TgPostsController < ActionController::API
     end
   rescue ActiveRecord::RecordNotUnique => e
     render json: e.message, status: :unprocessable_entity
+  rescue ActiveRecord::StatementInvalid => e
+    puts e.message
+    puts "RETRYING" * 100
+    # TODO limit amount of retryies ?
+    sleep 0.1
+    retry
   end
 
   def posts_per_day
