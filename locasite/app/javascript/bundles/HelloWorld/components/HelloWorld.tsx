@@ -5,7 +5,7 @@ import './HelloWorld.module.css';
 import {getPostsPerDay} from "../../api/tg_posts";
 
 const options = {
-    title: "Red Sox Attendance",
+    title: "Messages sent by You per day",
 }
 
 const types = [
@@ -20,48 +20,6 @@ const types = [
 ]
 
 
-const data = [
-    types,
-    [new Date(2012, 3, 13), 37032],
-    [new Date(2012, 3, 14), 38024],
-    [new Date(2012, 3, 15), 38024],
-    [new Date(2012, 3, 16), 38108],
-    [new Date(2012, 3, 17), 38229],
-]
-
-
-// const InfoCalendar = () => {
-//
-//     const [selected, setSelected] = useState(null)
-//     const [chartState, setChartState] = useState()
-//
-//     const selectEventHandler = {
-//         eventName: "select",
-//         callback: ({chartWrapper}) => {
-//             const chart = chartWrapper.getChart();
-//             const selection = chart.getSelection();
-//
-//             setSelected(selection)
-//         }
-//     }
-//
-//      return <>
-//           <Chart
-//               state={{}}
-//               chartType="Calendar"
-//               width="100%"
-//               height="400px"
-//               data={data}
-//               options={options}
-//               chartEvents={[selectEventHandler]}
-//           />
-//         {selected && <h2>Currently selected: {JSON.stringify(selected)} </h2>}
-//      </>
-// }
-
-
-
-
 const InfoCalendar = () => {
 
   const [selected, setSelected] = useState(null)
@@ -74,6 +32,7 @@ const InfoCalendar = () => {
 }
 
 
+// TODO show detailed info of day on select
 // Use the state and event handler in the ExampleCalendarChart component
 const ExampleCalendarChart = ({ setSelected }) => {
 
@@ -83,9 +42,15 @@ const ExampleCalendarChart = ({ setSelected }) => {
         eventName: "select",
         callback: ({chartWrapper}) => {
             const chart = chartWrapper.getChart();
-            const selection = chart.getSelection();
+            const selection = chart.getSelection() as any;
 
             setSelected(selection)
+
+            console.log(selection)
+
+            if (selection[0].row) {
+                console.log(stats[selection[0].row])
+            }
         }
     }
 
@@ -96,16 +61,20 @@ const ExampleCalendarChart = ({ setSelected }) => {
         const postsByDay = await getPostsPerDay(lastYear.toDateString(), today.toDateString())
         console.log(postsByDay)
         setStats(postsByDay.map(([day, count]) => [new Date(day), count]) ?? [])
+
     }
 
     useEffect(() => {
-        setup()
+        console.log('x------->')
+        //setup()
+        setInterval(setup, 1000)
+        // TODO use cables to watch for updates
     },[])
 
     return <Chart
         chartType="Calendar"
         width="100%"
-        height="400px"
+        height="1000px"
         data={[
             types,
             ...stats
