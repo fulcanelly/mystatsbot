@@ -1,7 +1,8 @@
 class TgPost < ApplicationRecord
 
   after_find do
-    Chat.find_or_create_by(id: self.chat_id)
+    next if self.respond_to? :tg_post_id
+    Chat.find_or_create_by(id: chat_id)
   end
 
   belongs_to :day
