@@ -8,7 +8,7 @@ from pyrogram import types, raw, utils, enums
 from lib.msg_per_day import AllMyMessages
 
 from lib.all_my_messages import CountAllMyMessagesPerChats
-import api.tg_posts
+import api.tg.posts, api.tg.chats
 
 client = Client('fulcanelly2', api_id, api_hash)
 
@@ -84,7 +84,7 @@ print(CountAllMyMessagesPerChats)
         #         count_messages(message)
 #client.run(ChatStatsCollector().start())
 def handle_message(message: types.Message):
-    api.tg_posts.create(message.chat.id, message.id, message.date)
+    api.tg.posts.create(message.chat.id, message.id, message.date)
 
 
 class CountMessagesPerDays():
@@ -138,5 +138,29 @@ class CountMessagesPerDays():
 
 
 
+async def update_chat_info():
+    async with client:
+        me = await client.get_me()
+        print(me.username)
 
-client.run(AllMyMessages(client, handle_message).start())
+        all = api.tg.chats.all()
+
+        for chat_entry in all:
+            chat_id = chat_entry['id']
+
+            try:
+                chat: types.Chat = await client.get_chat(chat_id)
+                api.tg.chats.update(chat_id, {
+                    'first_name': chat.first_name,
+                    'username': chat.username
+                })
+
+            except Exception as e:
+                print(e)
+                print(chat_id)
+            print(chat)
+
+    print(all)
+
+client.run(update_chat_info())
+#client.run(AllMyMessages(client, handle_message).start())
