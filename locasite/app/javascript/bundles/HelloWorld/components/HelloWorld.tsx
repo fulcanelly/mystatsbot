@@ -1,8 +1,10 @@
-import PropTypes from 'prop-types';
-import React, {useEffect, useRef, useState} from 'react';
+import * as PropTypes from 'prop-types'
+import * as React from 'react'
+import {useEffect, useRef, useState} from 'react';
 import {Chart, ReactGoogleChartEvent} from "react-google-charts";
 import './HelloWorld.module.css';
 import { getChatStatsOfDay, getPostsPerDay } from "../../api/tg_posts";
+import { Card, CardContent, Typography } from '@material-ui/core';
 
 const options = {
     title: "Messages sent by You per day",
@@ -36,10 +38,22 @@ const InfoCalendar = () => {
   </>
 }
 
-const ChatStatsPerDay = ({ chat, messageCount }) => <>
-        chat: <h1>{chat}</h1>
-        messages count: <p>{messageCount}</p>
-    </>
+const ChatStatsPerDay = ({ chat, messageCount }) => {
+    return  <Card>
+        <CardContent>
+            <Typography variant="h5" component="h2">
+                Chat name
+            </Typography>
+            <Typography color="textSecondary" gutterBottom>
+                Chat ID: {chat}
+            </Typography>
+            <Typography color="textSecondary" gutterBottom>
+                Messages by Me: {messageCount}
+            </Typography>
+        </CardContent>
+    </Card>
+
+}
 
 
 // TODO show detailed info of day on select
