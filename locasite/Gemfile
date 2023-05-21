@@ -50,3 +50,7 @@ end
 gem "shakapacker", "= 6.6"
 
 gem "react_on_rails", "= 13.3"
+
+gem "scenic", "~> 1.7"
+
+gem "scenic_sqlite_adapter", "~> 0.1.0"
