@@ -34,21 +34,21 @@ const InfoCalendar = () => {
   return <>
       <ExampleCalendarChart setSelected={setSelected}/>
       {selected && <h2>Currently selected: {JSON.stringify(selected)} </h2>}
-      {dayInfo.map(([chat, count]) => <ChatStatsPerDay chat={chat} messageCount={count}/>)}
+      {dayInfo.map(info => <ChatStatsPerDay chatInfo={info}/>)}
   </>
 }
 
-const ChatStatsPerDay = ({ chat, messageCount }) => {
+const ChatStatsPerDay = ({ chatInfo }) => {
     return  <Card>
         <CardContent>
             <Typography variant="h5" component="h2">
-                Chat name
+                {chatInfo.first_name} {chatInfo.username && `@${chatInfo.username}`}
             </Typography>
             <Typography color="textSecondary" gutterBottom>
-                Chat ID: {chat}
+                Chat ID: {chatInfo.chat_id}
             </Typography>
             <Typography color="textSecondary" gutterBottom>
-                Messages by Me: {messageCount}
+                Messages by Me: {chatInfo.post_count}
             </Typography>
         </CardContent>
     </Card>
