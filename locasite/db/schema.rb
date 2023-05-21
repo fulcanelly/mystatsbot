@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_21_214416) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_21_224701) do
   create_table "chats", force: :cascade do |t|
     t.string "first_name"
     t.string "username"
@@ -48,5 +48,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_21_214416) do
   INNER JOIN tg_posts ON tg_posts.chat_id = chats.id
   INNER JOIN days ON days.id = tg_posts.day_id
   GROUP BY chats.id, days.date
+  ORDER BY post_count DESC
   SQL
 end
