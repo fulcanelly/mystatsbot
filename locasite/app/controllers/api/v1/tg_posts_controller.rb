@@ -42,14 +42,7 @@ class Api::V1::TgPostsController < ActionController::API
   def chat_stats_of_day
     date = params[:day]
 
-    chat_msg_count_per_day = TgPost.joins(:day)
-      .where(day: { date: date })
-      .group(:chat_id)
-      .count.to_a
-      .sort_by do |a| a.last end
-      .reverse
-
-    render json: chat_msg_count_per_day
+    render json: MyDayMessageCountPerChat.where(date: date)
   end
 
   private
