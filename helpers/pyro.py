@@ -138,6 +138,8 @@ class CountMessagesPerDays():
 
 
 
+
+
 async def update_chat_info():
     async with client:
         me = await client.get_me()
@@ -145,21 +147,28 @@ async def update_chat_info():
 
         all = api.tg.chats.all()
 
-        for chat_entry in all:
-            chat_id = chat_entry['id']
+        async for dialog in client.get_dialogs():
 
-            try:
-                chat: types.Chat = await client.get_chat(chat_id)
-                api.tg.chats.update(chat_id, {
-                    'first_name': chat.first_name,
-                    'username': chat.username
-                })
+            if dialog.chat.type != enums.ChatType.PRIVATE:
+                continue
 
-            except Exception as e:
-                print(e)
-                print(chat_id)
-            print(chat)
+            if dialog.chat.first_name == None:
+                print(dialog)
 
+            dialog: types.Dialog = dialog
+
+            for chat_entry in all:
+                chat_id = chat_entry['id']
+                if dialog.chat.id == chat_id:
+                    api.tg.chats.update(chat_id, {
+                        'first_name': dialog.chat.first_name,
+                        'username': dialog.chat.username
+                    })
+
+
+
+
+        # print(await client.get_chat(6269650921))
     print(all)
 
 client.run(update_chat_info())
