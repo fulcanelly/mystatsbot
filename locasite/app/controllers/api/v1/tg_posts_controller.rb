@@ -39,6 +39,12 @@ class Api::V1::TgPostsController < ActionController::API
     render json: posts_count_per_day
   end
 
+  def chat_stats_of_day
+    date = params[:day]
+
+    render json: MyDayMessageCountPerChat.where(date: date)
+  end
+
   private
 
   def tg_post_params

@@ -8,3 +8,13 @@ export function getPostsPerDay(startDate: Date | string, endDate: Date | string)
     return fetch(apiUrl + '?' + new URLSearchParams(params))
         .then(response => response.json())
 }
+
+export function getChatStatsOfDay(day: Date | string) {
+    const apiUrl = '/api/v1/tg_posts/chat_stats_of_day';
+    const params = {
+        day: day.toString()
+    };
+
+    return fetch(apiUrl + '?' + new URLSearchParams(params))
+        .then(response => response.json())
+}

@@ -10,7 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_20_203126) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_22_003044) do
+  create_table "chats", force: :cascade do |t|
+    t.string "first_name"
+    t.string "username"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "is_deleted", default: false
+  end
+
   create_table "days", force: :cascade do |t|
     t.date "date"
     t.datetime "created_at", null: false
@@ -29,4 +37,19 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_20_203126) do
   end
 
   add_foreign_key "tg_posts", "days"
+
+  create_view "my_day_message_count_per_chats", sql_definition: <<-SQL
+      SELECT
+      chats.id as chat_id,
+      chats.first_name,
+      chats.username,
+      chats.is_deleted,
+      days.date,
+      COUNT(tg_posts.id) AS post_count
+  FROM chats
+  INNER JOIN tg_posts ON tg_posts.chat_id = chats.id
+  INNER JOIN days ON days.id = tg_posts.day_id
+  GROUP BY chats.id, days.date
+  ORDER BY post_count DESC
+  SQL
 end
