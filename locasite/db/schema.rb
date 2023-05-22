@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_21_234734) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_22_003044) do
   create_table "chats", force: :cascade do |t|
     t.string "first_name"
     t.string "username"
@@ -43,6 +43,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_21_234734) do
       chats.id as chat_id,
       chats.first_name,
       chats.username,
+      chats.is_deleted,
       days.date,
       COUNT(tg_posts.id) AS post_count
   FROM chats

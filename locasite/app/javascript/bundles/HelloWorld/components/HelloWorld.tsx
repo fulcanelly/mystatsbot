@@ -4,7 +4,7 @@ import {useEffect, useRef, useState} from 'react';
 import {Chart, ReactGoogleChartEvent} from "react-google-charts";
 import './HelloWorld.module.css';
 import { getChatStatsOfDay, getPostsPerDay } from "../../api/tg_posts";
-import { Card, CardContent, Typography } from '@material-ui/core';
+import { Card, CardContent, Link, Typography } from '@material-ui/core';
 
 const options = {
     title: "Messages sent by You per day",
@@ -39,16 +39,26 @@ const InfoCalendar = () => {
 }
 
 const ChatStatsPerDay = ({ chatInfo }) => {
-    return  <Card>
+    const userurl = <Link
+        target="_blank"
+        rel="noopener noreferrer"
+        href={`https://t.me/${chatInfo.username}`}>
+            {chatInfo.username}
+        </Link>
+
+    return <Card>
         <CardContent>
             <Typography variant="h5" component="h2">
-                {chatInfo.first_name} {chatInfo.username && `@${chatInfo.username}`}
+                {chatInfo.first_name} {chatInfo.username && userurl}
             </Typography>
             <Typography color="textSecondary" gutterBottom>
                 Chat ID: {chatInfo.chat_id}
             </Typography>
             <Typography color="textSecondary" gutterBottom>
                 Messages by Me: {chatInfo.post_count}
+            </Typography>
+            <Typography color="textSecondary" gutterBottom>
+                {chatInfo.is_deleted && '<Deleted>'}
             </Typography>
         </CardContent>
     </Card>
