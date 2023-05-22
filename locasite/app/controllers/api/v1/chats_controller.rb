@@ -3,8 +3,7 @@ class Api::V1::ChatsController < ApplicationController
 
   # GET /chats
   def index
-    @chats = Chat.where(first_name: nil)
-
+    @chats = Chat.where(first_name: nil, is_deleted: false)
     render json: @chats
   end
 
@@ -41,6 +40,6 @@ class Api::V1::ChatsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def chat_params
-    params.require(:chat).permit(:first_name, :username)
+    params.require(:chat).permit(:first_name, :username, :is_deleted)
   end
 end
