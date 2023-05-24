@@ -5,6 +5,10 @@ class TgPost < ApplicationRecord
     Chat.find_or_create_by(id: chat_id)
   end
 
+  after_save do
+    Chat.find_by(id: chat_id)&.touch
+  end
+
   belongs_to :day
   belongs_to :chat
 end

@@ -14,6 +14,7 @@ class Api::V1::TgPostsController < ActionController::API
     end
   rescue ActiveRecord::RecordNotUnique => e
     render json: e.message, status: :unprocessable_entity
+    Chat.find_by(id: tg_post_params[:chat_id])&.touch
   rescue ActiveRecord::StatementInvalid => e
     puts e.message
     puts "RETRYING" * 100
