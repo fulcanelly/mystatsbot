@@ -17,12 +17,13 @@ base_url = 'http://localhost:3000/api/v1/'
 
 # POST request to create a new TG post
 
-def create(chat_id, message_id, serialized_date):
+def create(chat_id, message_id, serialized_date, send_by_id = None):
     url = 'http://localhost:3000/api/v1/tg_posts'
     payload = {
         'tg_post': {
             'chat_id': chat_id,
             'message_id': message_id,
+            'send_by_id': send_by_id,
         },
         'serialized_date': str(serialized_date)
     }
