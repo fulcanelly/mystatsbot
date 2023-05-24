@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
   get 'hello_world', to: 'hello_world#index'
+  get 'chat_stats', to: 'chat_stats#index'
+  get 'chat_stats/:id', to: 'chat_stats#show'
+
   root "hello_world#index"
 
   namespace :api do

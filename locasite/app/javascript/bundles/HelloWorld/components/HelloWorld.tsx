@@ -46,6 +46,8 @@ const ChatStatsPerDay = ({ chatInfo }) => {
             {chatInfo.username}
         </Link>
 
+    const moreInfoLink = <Link href={`/chat_stats/${chatInfo.chat_id}`}>More info...</Link>
+
     return <Card>
         <CardContent>
             <Typography variant="h5" component="h2">
@@ -59,6 +61,9 @@ const ChatStatsPerDay = ({ chatInfo }) => {
             </Typography>
             <Typography color="textSecondary" gutterBottom>
                 {chatInfo.is_deleted && '<Deleted>'}
+            </Typography>
+            <Typography>
+                {moreInfoLink}
             </Typography>
         </CardContent>
     </Card>
@@ -92,7 +97,7 @@ const ExampleCalendarChart = ({ setSelected }) => {
     const lastYear = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
 
     const setup = async () => {
-        const postsByDay = await getPostsPerDay(lastYear.toDateString(), today.toDateString())
+        const postsByDay = await getPostsPerDay({})
         setStats(postsByDay.map(([day, count]) => [new Date(day), count]) ?? [])
     }
 

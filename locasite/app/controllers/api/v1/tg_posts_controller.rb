@@ -32,9 +32,19 @@ class Api::V1::TgPostsController < ActionController::API
     #   return
     # end
 
-    posts_count_per_day = TgPost.joins(:day)#.where(days: { date: start_date..end_date })
-      .group('days.date')
-      .count.to_a
+    chat_id = params[:chat_id]
+
+    posts_count_per_day =
+      if chat_id
+        TgPost.joins(:day)
+          .where(chat_id: chat_id) # TODO: .where(days: { date: start_date..end_date })
+          .group('days.date')
+          .count.to_a
+      else
+        TgPost.joins(:day)
+          .group('days.date')
+          .count.to_a
+      end
 
     render json: posts_count_per_day
   end
