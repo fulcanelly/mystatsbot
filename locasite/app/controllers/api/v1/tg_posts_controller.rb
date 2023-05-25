@@ -1,6 +1,7 @@
 class Api::V1::TgPostsController < ActionController::API
 
   def create
+    puts 'AAA' * 1000
     date = Date.parse(params[:serialized_date])
     day = Day.find_or_create_by(date: date)
 
@@ -23,28 +24,50 @@ class Api::V1::TgPostsController < ActionController::API
     retry
   end
 
+  # TODO, where send_by_id: my and not my
+  # TgPost.joins(:day)
+  #   .where(chat_id: chat_id) # TODO: .where(days: { date: start_date..end_date })
+  #   .group('days.date')
+  #   .count.to_a
+
   def posts_per_day
-    # TODO
-    # start_date = Date.parse(params[:start_date])
-    # end_date = Date.parse(params[:end_date]) + 1
-
-    # if (end_date - start_date).to_i > 365
-    #   render json: { error: 'Date range exceeds one year' }, status: :unprocessable_entity
-    #   return
-    # end
-
     chat_id = params[:chat_id]
 
     posts_count_per_day =
       if chat_id
-        TgPost.joins(:day)
-          .where(chat_id: chat_id) # TODO: .where(days: { date: start_date..end_date })
+
+        send_by_me_counts = TgPost.joins(:day)
+          .where(chat_id: chat_id)
+          .where(send_by_id: nil)
           .group('days.date')
-          .count.to_a
+          .count
+          .map { next _1, -_2 }
+          .to_h
+
+        send_by_others_counts = TgPost.joins(:day)
+          .where(chat_id: chat_id)
+          .where.not(send_by_id: nil)
+          .group('days.date')
+          .count
+
+        send_by_me_counts.merge(send_by_others_counts) { |_, a, b| a + b }
+          .to_a
+
       else
-        TgPost.joins(:day)
+        send_by_me_counts = TgPost.joins(:day)
+          .where(send_by_id: nil)
           .group('days.date')
-          .count.to_a
+          .count
+          .map { next _1, -_2 }
+          .to_h
+
+        send_by_others_counts = TgPost.joins(:day)
+          .where.not(send_by_id: nil)
+          .group('days.date')
+          .count
+
+        send_by_me_counts.merge(send_by_others_counts) { |_, a, b| a + b }
+          .to_a
       end
 
     render json: posts_count_per_day
@@ -61,4 +84,10 @@ class Api::V1::TgPostsController < ActionController::API
   def tg_post_params
     params.require(:tg_post).permit(:chat_id, :message_id, :send_by_id)
   end
+
+  # TODOapp/controllers/api/v1/tg_posts_controller.rb
+  # def top_chats
+  #   TgPost.joins(:chat).group(:first_name, :chat_id).order(count_all: :desc).limit(10).count
+  # end
+
 end
