@@ -102,8 +102,8 @@ const ExampleCalendarChart = ({ setSelected }) => {
     }
 
     useEffect(() => {
-        setInterval(setup, 1000)
-        // TODO use cables to watch for updates
+        const interval = setInterval(setup, 1000)
+        return () => clearInterval(interval)
     },[])
 
     return <Chart
@@ -131,6 +131,6 @@ const HelloWorld = (props) => {
 
 HelloWorld.propTypes = {
   name: PropTypes.string.isRequired, // this is passed from the Rails view
-};
+};app/javascript/bundles/HelloWorld/components/HelloWorld.tsx
 
 export default HelloWorld

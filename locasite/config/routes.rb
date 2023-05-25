@@ -13,6 +13,8 @@ Rails.application.routes.draw do
       post 'tg_posts', to: 'tg_posts#create'
       get 'tg_posts/posts_per_day', to: 'tg_posts#posts_per_day'
       get 'tg_posts/chat_stats_of_day', to: 'tg_posts#chat_stats_of_day'
+      get 'messages_loads/chats_to_load_from', to: 'message_loads#chats_to_load_from'
+
     end
   end
 end
